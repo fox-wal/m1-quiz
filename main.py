@@ -5,6 +5,7 @@ import datetime as dt
 from error_messages import *
 from display_messages import *
 from keys import *
+from file_paths import *
 
 def abend(message):
 	print(PROGRAM_ABENDED, message)
@@ -15,13 +16,14 @@ def abend(message):
 
 ## Config file
 
-CONFIG_FILE_PATH = "config.json"
-
 settings = {
 	S_MULTIPLE_CHOICE : bool
 	,S_NUMBER_OF_QUESTIONS : int
 	,S_NUMBER_OF_QUESTIONS : int
 	,S_MULTIPLE_CHOICE_USE_INDEX : bool
+	,S_QUESTION_FILE_PATH : str
+	,S_SCORE_FILE_PATH : str
+	,S_PROGRAM_STATE_FILE_PATH : str
 }
 
 try:
@@ -54,8 +56,6 @@ settings[S_NUMBER_OF_QUESTIONS] = max(1, settings[S_NUMBER_OF_QUESTIONS])
 
 ## Question file
 
-QUESTION_FILE_PATH = "questions.json"
-
 question_template = {
 	Q_QUESTION : str
 	,Q_ANSWER : str
@@ -67,7 +67,7 @@ questions : list[dict] = []
 faulty_questions = 0
 
 try:
-	file = open(QUESTION_FILE_PATH, "r")
+	file = open(settings[S_QUESTION_FILE_PATH], "r")
 except FileNotFoundError:
 	abend(QUESTION_FILE_NOT_FOUND)
 else:
@@ -129,13 +129,13 @@ for q in range(number_of_questions):
 	
 	# Print answer options.
 	if settings[S_MULTIPLE_CHOICE]:
-		# Ensure number of attempts does not exceed the number of options - 1.
+		# Ensure number of attempts does not exceed the number of incorrect answer options.
 		settings[S_NUMBER_OF_ATTEMPTS] = min(settings[S_NUMBER_OF_ATTEMPTS], len(questions[q][Q_ANSWER_OPTIONS]))
 		answer_options = questions[q][Q_ANSWER_OPTIONS].copy() + [questions[q][Q_ANSWER]]
 		shuffle(answer_options)
 		for o in range(len(answer_options)):
 			if settings[S_MULTIPLE_CHOICE_USE_INDEX]:
-				print("{}. {}".format(o + 1, answer_options[o]))
+				print(MULTI_CHOICE_OPTION_WITH_INDEX_LINE.format(o + 1, answer_options[o]))
 			else:
 				print(answer_options[o])
 		
@@ -202,10 +202,8 @@ if choice == "Y":
 
 	# Load score file.
 
-	SCORE_FILE_PATH = "scores.json"
-
 	try:
-		file = open(SCORE_FILE_PATH, "r+")
+		file = open(settings[S_SCORE_FILE_PATH], "r+")
 	except FileNotFoundError:
 		print(SCORE_FILE_CREATED)
 	else:
@@ -230,11 +228,8 @@ if choice == "Y":
 		finally:
 			file.close()
 	finally:
-		file = open(SCORE_FILE_PATH, "w")
+		file = open(settings[S_SCORE_FILE_PATH], "w")
 		json.dump(scores, file)
 		file.close()
 
-
 print(GOODBYE)
-
-PROGRAM_STATE_FILE_PATH = "program_state.json"

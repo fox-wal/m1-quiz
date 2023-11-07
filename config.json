@@ -3,4 +3,7 @@
     ,"number of questions" : 3
     ,"number of attempts" : 1
     ,"multi-choice: select using index" : true
+    ,"question file path" : "questions.json"
+    ,"score file path" : "scores.json"
+    ,"program state file path" : "program_state.json"
 }
