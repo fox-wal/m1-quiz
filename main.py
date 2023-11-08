@@ -6,6 +6,94 @@ from display_messages import *
 from keys import *
 from load_files import *
 
+def print_answer_options(question:dict, select_using_index:bool):
+	"""
+	Print the answer options for a multiple-choice question.
+	"""
+
+	answer_options = question[Q_ANSWER_OPTIONS].copy() + [question[Q_ANSWER]]
+	shuffle(answer_options)
+
+	for o in range(len(answer_options)):
+		if select_using_index:
+			print(MULTI_CHOICE_OPTION_WITH_INDEX_LINE.format(o + 1, answer_options[o]))
+		else:
+			print(answer_options[o])
+
+	# Prompt user to choose.
+	if select_using_index:
+		print(MULTI_CHOICE_INDEX_PROMPT)
+	else:
+		print(TYPE_IN_ANSWER_PROMPT)
+
+def get_answer_results(points:int, multiple_choice:bool, select_using_index:bool, max_attempts:int, answer_options:list[str] = []) -> tuple[int, bool]:
+	"""
+	User types in/selects an answer.
+
+	Parameters:
+		points : int
+			The max number of points for this question.
+		multiple_choice : bool
+			Whether or not the question is a multiple-choice question.
+		select_using_index : bool
+			[For multiple-choice questions] Whether the user should select the option by typing it in or by entering an index.
+		max_attempts : int
+			Maximum number of attempts for this question.
+		answer_options : list[str]
+			[For multiple-choice questions] All the answer options (including the correct one).
+
+	Returns:
+		`tuple[int, bool]`
+			The `int` is the number of points the user earned for this question.
+			The `bool` is whether or not the user entered the correct answer.
+	"""
+
+	attempt = 1
+	correct = False
+
+	while not correct and (attempt <= max_attempts):
+
+		# Select answer using index (multiple choice only).
+
+		if multiple_choice and select_using_index:
+			while True:
+				try:
+					choice = int(input()) - 1
+					if not choice in range(len(answer_options)):
+						raise ValueError
+				except ValueError:
+					print(ENTER_INDEX_IN_CORRECT_RANGE_PROMPT.format(1, len(answer_options)))
+				else:
+					break
+			correct = answer_options[choice] == questions[q][Q_ANSWER]
+
+		# Type in answer
+
+		else:
+			print(TYPE_IN_ANSWER_PROMPT)
+			correct = input().lower() == questions[q][Q_ANSWER].lower()
+
+		# Calculate points + attempts.
+
+		if not correct:
+			print(INCORRECT.format(max_attempts - attempt))
+		points -= 1
+		attempt += 1
+
+	return (points, correct)
+
+def get_user_name() -> str:
+	"""
+	Returns:
+		User name.
+	"""
+	while True:
+		name = input(NAME_PROMPT)
+		if "\"" in name:
+			print(INVALID_CHARACTER.format("\""))
+		else:
+			return name
+
 # Load essential files
 
 settings = load_config_file()
@@ -14,14 +102,7 @@ questions = load_questions_file(settings[S_QUESTION_FILE_PATH])
 # Welcome
 
 print(WELCOME)
-
-## Get user's name
-
-while True:
-	name = input(NAME_PROMPT)
-	if "\"" not in name:
-		print(INVALID_CHARACTER.format("\""))
-		break
+name = get_user_name()
 
 # Start Quiz
 max_score = 0
@@ -37,57 +118,27 @@ for q in range(number_of_questions):
 	if settings[S_MULTIPLE_CHOICE]:
 		# Ensure number of attempts does not exceed the number of incorrect answer options.
 		settings[S_NUMBER_OF_ATTEMPTS] = min(settings[S_NUMBER_OF_ATTEMPTS], len(questions[q][Q_ANSWER_OPTIONS]))
-		answer_options = questions[q][Q_ANSWER_OPTIONS].copy() + [questions[q][Q_ANSWER]]
-		shuffle(answer_options)
-		for o in range(len(answer_options)):
-			if settings[S_MULTIPLE_CHOICE_USE_INDEX]:
-				print(MULTI_CHOICE_OPTION_WITH_INDEX_LINE.format(o + 1, answer_options[o]))
-			else:
-				print(answer_options[o])
-		
-		# Prompt user to choose.
-		if settings[S_MULTIPLE_CHOICE_USE_INDEX]:
-			print(MULTI_CHOICE_INDEX_PROMPT)
-		else:
-			print(MULTI_CHOICE_ANSWER_PROMPT)
+		print_answer_options(questions[q], settings[S_MULTIPLE_CHOICE_USE_INDEX])
 
 	# User enters answer.
-	correct = False
 	points = settings[S_NUMBER_OF_ATTEMPTS]
 	max_score += points
-	attempt = 1
-	while not correct and (attempt <= settings[S_NUMBER_OF_ATTEMPTS]):
-		if settings[S_MULTIPLE_CHOICE] and settings[S_MULTIPLE_CHOICE_USE_INDEX]:
-			while True:
-				try:
-					choice = int(input()) - 1
-					if not choice in range(len(answer_options)):
-						raise ValueError
-				except ValueError:
-					print(MULTI_CHOICE_BAD_INDEX_FORMAT.format(1, len(answer_options)))
-				else:
-					break
-			correct = answer_options[choice] == questions[q][Q_ANSWER]
-		else:
-			correct = input().lower() == questions[q]["answer"].lower()
 
-		if not correct:
-			print(INCORRECT.format(settings[S_NUMBER_OF_ATTEMPTS] - attempt))
-			points -= 1
+	points, correct = get_answer_results(points, settings[S_MULTIPLE_CHOICE], settings[S_MULTIPLE_CHOICE_USE_INDEX], settings[S_NUMBER_OF_ATTEMPTS], questions[q][Q_ANSWER_OPTIONS])
 
-		attempt += 1
-	
+	# Process answer results.
+
 	if correct:
 		print(CORRECT.format(points))
 		score += points
-		questions_correct += 1
-	print(TOTAL_SCORE.format(score))
+	
+	print(SCORE_SO_FAR.format(score))
 
-# Results
+# Quiz Results
 
 print(RESULTS.format(questions_correct, number_of_questions, score, max_score))
 
-# Save score
+# Save Score
 
 ## Ask if user wants to save it.
 

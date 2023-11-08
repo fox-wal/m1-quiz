@@ -22,10 +22,10 @@ NAME_PROMPT = "Name: "
 QUESTION_LINE = "\nQuestion {} of {}: {}\n"
 MULTI_CHOICE_OPTION_WITH_INDEX_LINE = "{}. {}"
 MULTI_CHOICE_INDEX_PROMPT = "\nEnter the index of the correct answer: "
-MULTI_CHOICE_ANSWER_PROMPT = "\nEnter the correct answer: "
+TYPE_IN_ANSWER_PROMPT = "\nType in the correct answer: "
 INCORRECT = "Incorrect. {} attempts remaining."
 CORRECT = "Correct! [+{}]"
-TOTAL_SCORE = "Total score: {}"
+SCORE_SO_FAR = "Total score: {}"
 
 # After Quiz
 

@@ -1,7 +1,7 @@
 from display_messages import PROGRAM_ABENDED
 
 INVALID_CHARACTER = "Invalid character: {}"
-MULTI_CHOICE_BAD_INDEX_FORMAT = "Please enter an integer between {} and {}."
+ENTER_INDEX_IN_CORRECT_RANGE_PROMPT = "Please enter an integer between {} and {}."
 SAVE_SCORE_BAD_INPUT = "Please enter one of {}."
 
 # Config file
