@@ -4,7 +4,6 @@ import datetime as dt
 from error_messages import *
 from display_messages import *
 from keys import *
-from file_paths import CONFIG_FILE_PATH
 from load_files import *
 
 # Load essential files

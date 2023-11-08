@@ -7,7 +7,7 @@ class KeyMissingError(Exception):
 	def __init__(self, *args: object) -> None:
 		super().__init__(*args)
 
-def check_format(json_object:dict, template:dict) -> dict:
+def format(json_object:dict, template:dict) -> dict:
 	"""
 	Check if an item from a json file is of the correct format.
 
@@ -30,6 +30,7 @@ def check_format(json_object:dict, template:dict) -> dict:
 	result = {}
 	
 	# Check if all required keys are present.
+	
 	if len(json_object) < len(template):
 		raise KeyMissingError
 	
@@ -74,17 +75,15 @@ def parse_json_file(path:str, template:dict, is_list:bool) -> list[dict] | dict:
 	try:
 		file_contents = json.load(file)
 
-		print(file_contents)
-
 		# Format
 
 		if is_list:
-			for item in list(file_contents):
-				print(item)
-				result.append(check_format(item, template))
+			for item in list[dict](file_contents):
+				# DEBUG:
+				print(type(item))
+				result.append(format(item, template))
 		else:
-			for key in dict(file_contents).keys():
-				result[key] = check_format(template[key], template)
+			result = format(dict(file_contents), template)
 
 	except Exception as e:
 		raise e
@@ -106,7 +105,7 @@ def load_config_file() -> dict:
 	settings:dict = {
 		S_MULTIPLE_CHOICE : bool
 		,S_NUMBER_OF_QUESTIONS : int
-		,S_NUMBER_OF_QUESTIONS : int
+		,S_NUMBER_OF_ATTEMPTS : int
 		,S_MULTIPLE_CHOICE_USE_INDEX : bool
 		,S_QUESTION_FILE_PATH : str
 		,S_SCORE_FILE_PATH : str
@@ -122,6 +121,7 @@ def load_config_file() -> dict:
 	except ValueError:
 		abend(SETTINGS_WRONG_TYPE)
 	else:	
+		# DEBUG:
 		print("Config file loaded correctly.")
 		# Ensure numbers of attempts and questions are at least 1.
 		settings[S_NUMBER_OF_ATTEMPTS] = max(1, settings[S_NUMBER_OF_ATTEMPTS])
@@ -129,7 +129,7 @@ def load_config_file() -> dict:
 
 	return settings
 
-def load_questions_file(file_path : str) -> dict:
+def load_questions_file(file_path : str) -> list[dict]:
 	"""
 	Load and parse questions file.
 
@@ -150,13 +150,14 @@ def load_questions_file(file_path : str) -> dict:
 	}
 
 	try:
-		questions : list[dict] = parse_json_file(file_path, question_template, true)
+		questions:list[dict] = parse_json_file(file_path, question_template, True)
 		if len(questions) == 0:
 			abend(QUESTION_FILE_EMPTY)
 	except FileNotFoundError:
 		abend(QUESTION_FILE_NOT_FOUND)
-	except KeyMissingError | ValueError:
+	except KeyMissingError or ValueError:
 		abend(FAULTY_QUESTIONS)
 	else:
-		print("{} questions loaded".format(len(questions)))
+		# DEBUG:
+		print("{} questions loaded.".format(len(questions)))
 		return questions
