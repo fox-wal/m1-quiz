@@ -30,7 +30,7 @@ def format(json_object:dict, template:dict) -> dict:
 	result = {}
 	
 	# Check if all required keys are present.
-	
+
 	if len(json_object) < len(template):
 		raise KeyMissingError
 	
@@ -79,8 +79,6 @@ def parse_json_file(path:str, template:dict, is_list:bool) -> list[dict] | dict:
 
 		if is_list:
 			for item in list[dict](file_contents):
-				# DEBUG:
-				print(type(item))
 				result.append(format(item, template))
 		else:
 			result = format(dict(file_contents), template)
@@ -121,8 +119,6 @@ def load_config_file() -> dict:
 	except ValueError:
 		abend(SETTINGS_WRONG_TYPE)
 	else:	
-		# DEBUG:
-		print("Config file loaded correctly.")
 		# Ensure numbers of attempts and questions are at least 1.
 		settings[S_NUMBER_OF_ATTEMPTS] = max(1, settings[S_NUMBER_OF_ATTEMPTS])
 		settings[S_NUMBER_OF_QUESTIONS] = max(1, settings[S_NUMBER_OF_QUESTIONS])
@@ -158,6 +154,4 @@ def load_questions_file(file_path : str) -> list[dict]:
 	except KeyMissingError or ValueError:
 		abend(FAULTY_QUESTIONS)
 	else:
-		# DEBUG:
-		print("{} questions loaded.".format(len(questions)))
 		return questions
