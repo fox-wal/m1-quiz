@@ -1,109 +1,16 @@
-from io import TextIOWrapper
 import json as json
 from random import shuffle
 import datetime as dt
 from error_messages import *
 from display_messages import *
 from keys import *
-from file_paths import *
-
-def abend(message):
-	print(PROGRAM_ABENDED, message)
-	exit()
+from file_paths import CONFIG_FILE_PATH
+from load_files import *
 
 # Load essential files
 
-
-## Config file
-
-settings = {
-	S_MULTIPLE_CHOICE : bool
-	,S_NUMBER_OF_QUESTIONS : int
-	,S_NUMBER_OF_QUESTIONS : int
-	,S_MULTIPLE_CHOICE_USE_INDEX : bool
-	,S_QUESTION_FILE_PATH : str
-	,S_SCORE_FILE_PATH : str
-	,S_PROGRAM_STATE_FILE_PATH : str
-}
-
-try:
-	file = open(CONFIG_FILE_PATH, "r")
-except FileNotFoundError:
-	abend(CONFIG_FILE_NOT_FOUND)
-else:
-	file_contents = json.load(file)
-	file.close()
-
-	# Check if the config file is formatted correctly.
-	if len(file_contents) < len(settings):
-		abend(SETTINGS_MISSING)
-	for setting in file_contents.keys():
-		if setting not in settings.keys():
-			abend(SETTINGS_MISSING)
-		try:
-			# Check if the value for the current setting is of the correct type.
-			value = settings[setting](file_contents[setting])
-		except ValueError:
-			abend(SETTINGS_WRONG_TYPE)
-		else:
-			settings[setting] = value
-	
-	print("Config file loaded correctly.")
-
-# Ensure numbers of attempts and questions are at least 1.
-settings[S_NUMBER_OF_ATTEMPTS] = max(1, settings[S_NUMBER_OF_ATTEMPTS])
-settings[S_NUMBER_OF_QUESTIONS] = max(1, settings[S_NUMBER_OF_QUESTIONS])
-
-## Question file
-
-question_template = {
-	Q_QUESTION : str
-	,Q_ANSWER : str
-	,Q_ANSWER_OPTIONS : list[str]
-}
-
-questions : list[dict] = []
-
-faulty_questions = 0
-
-try:
-	file = open(settings[S_QUESTION_FILE_PATH], "r")
-except FileNotFoundError:
-	abend(QUESTION_FILE_NOT_FOUND)
-else:
-	file_contents = json.load(file)
-	file.close()
-
-	# Check if question file is formatted correctly.
-	try:
-		questions = file_contents[Q_QUESTIONS]
-	except:
-		abend(QUESTION_FILE_EMPTY)
-	else:
-		# Check if there are any questions.
-		try:
-			questions[0]
-		except:
-			abend(QUESTION_FILE_EMPTY)
-		for q in range(len(questions)):
-			# Check if the question contains all the required elements.
-			for element in question_template.keys():
-				if element not in questions[q].keys():
-					questions.remove(questions[q])
-					faulty_questions += 1
-					q += 1
-					break
-			# Check if each element is of the correct type.
-			for element in questions[q].keys():
-				try:
-					questions[q][element] = question_template[element](questions[q][element])
-				except ValueError:
-					questions.remove(questions[q])
-					faulty_questions += 1
-					break
-	
-	print(FAULTY_QUESTIONS_REMOVED, faulty_questions)
-	print(NON_FAULTY_QUESTIONS, len(questions))
+settings = load_config_file()
+questions = load_questions_file(settings[S_QUESTION_FILE_PATH])
 
 # Welcome
 

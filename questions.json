@@ -1,49 +1,47 @@
-{
-	"questions" : [
-		{
-			"question" : "The word dinosaur is derived from the Ancient Greek phrase deinos sauros, but what does that phrase mean?"
-			,"answer" : "Terrible Lizard"
-			,"multi-choice options" : [
-				"Giant Dragon"
-				,"Lizard of the Gods"
-				,"Ancient Reptile"
-			]
-		}
-		,{
-			"question" : "Which iconic dinosaur featured in the Jurassic Park franchise did not live during the Jurassic period?"
-			,"answer" : "Pterosaur"
-			,"multi-choice options" : [
-				"Stegosaurus"
-				,"Brachiosaurus"
-				,"Dilophosaurus"
-			]
-		}
-		,{
-			"question" : "What kind of dinosaur was Littlefoot, the main character of the 'Land Before Time' series?"
-			,"answer" : "Apatosaurus"
-			,"multi-choice options" : [
-				"Diplodocus"
-				,"Triceratops"
-				,"Brontosaurus"
-			]
-		}
-		,{
-			"question" : "Which US state is known as the Stegosaurus state, and has the Stegosaurus as its official state dinosaur?"
-			,"answer" : "Colorado"
-			,"multi-choice options" : [
-				"New Mexico"
-				,"Washington "
-				,"Akansas"
-			]
-		}
-		,{
-			"question" : "Approximately how many years ago did dinosaurs become extinct?"
-			,"answer" : "65.5 million years"
-			,"multi-choice options" : [
-				"45.5 million years"
-				,"55.5 million years"
-				,"75.5 million years"
-			]
-		}
-	]
-}
+[
+	{
+		"question" : "The word dinosaur is derived from the Ancient Greek phrase deinos sauros, but what does that phrase mean?"
+		,"answer" : "Terrible Lizard"
+		,"multi-choice options" : [
+			"Giant Dragon"
+			,"Lizard of the Gods"
+			,"Ancient Reptile"
+		]
+	}
+	,{
+		"question" : "Which iconic dinosaur featured in the Jurassic Park franchise did not live during the Jurassic period?"
+		,"answer" : "Pterosaur"
+		,"multi-choice options" : [
+			"Stegosaurus"
+			,"Brachiosaurus"
+			,"Dilophosaurus"
+		]
+	}
+	,{
+		"question" : "What kind of dinosaur was Littlefoot, the main character of the 'Land Before Time' series?"
+		,"answer" : "Apatosaurus"
+		,"multi-choice options" : [
+			"Diplodocus"
+			,"Triceratops"
+			,"Brontosaurus"
+		]
+	}
+	,{
+		"question" : "Which US state is known as the Stegosaurus state, and has the Stegosaurus as its official state dinosaur?"
+		,"answer" : "Colorado"
+		,"multi-choice options" : [
+			"New Mexico"
+			,"Washington "
+			,"Akansas"
+		]
+	}
+	,{
+		"question" : "Approximately how many years ago did dinosaurs become extinct?"
+		,"answer" : "65.5 million years"
+		,"multi-choice options" : [
+			"45.5 million years"
+			,"55.5 million years"
+			,"75.5 million years"
+		]
+	}
+]

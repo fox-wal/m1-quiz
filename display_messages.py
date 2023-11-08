@@ -1,4 +1,7 @@
 PROGRAM_ABENDED = "Program abended:"
+
+# During Quiz
+
 WELCOME = """
                         -----+-----
 
@@ -23,6 +26,9 @@ MULTI_CHOICE_ANSWER_PROMPT = "\nEnter the correct answer: "
 INCORRECT = "Incorrect. {} attempts remaining."
 CORRECT = "Correct! [+{}]"
 TOTAL_SCORE = "Total score: {}"
+
+# After Quiz
+
 RESULTS = """
 +---------------End of Quiz---------------+
 
