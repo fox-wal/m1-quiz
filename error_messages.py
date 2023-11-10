@@ -2,7 +2,7 @@ from display_messages import PROGRAM_ABENDED
 
 INVALID_CHARACTER = "Invalid character: {}"
 ENTER_INDEX_IN_CORRECT_RANGE_PROMPT = "Please enter an integer between {} and {}."
-SAVE_SCORE_BAD_INPUT = "Please enter one of {}."
+ENTER_ONE_OF_PROMPT = "Please enter one of {}."
 
 # Config file
 
@@ -20,6 +20,7 @@ FAULTY_QUESTIONS = "Question file contained faulty questions."
 
 COULD_NOT_SAVE_SCORE = "Could not save score."
 SCORES_FILE_CORRUPTED = "Scores file is corrupted."
+NO_SCORES_FOR_USER = "No scores found for user \"{}\"."
 
 def abend(message):
 	print(PROGRAM_ABENDED, message)
