@@ -4,7 +4,6 @@ S_NUMBER_OF_ATTEMPTS = "number of attempts"
 S_MULTIPLE_CHOICE_USE_INDEX = "multi-choice: select using index"
 S_QUESTION_FILE_PATH = "question file path"
 S_SCORE_FILE_PATH = "score file path"
-S_PROGRAM_STATE_FILE_PATH = "program state file path"
 
 Q_QUESTIONS = "questions"
 Q_QUESTION = "question"

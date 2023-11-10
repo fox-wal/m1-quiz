@@ -5,5 +5,4 @@
     ,"multi-choice: select using index" : true
     ,"question file path" : "questions.json"
     ,"score file path" : "scores.json"
-    ,"program state file path" : "program_state.json"
 }

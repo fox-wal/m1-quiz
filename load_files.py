@@ -107,7 +107,6 @@ def load_config_file() -> dict:
         ,S_MULTIPLE_CHOICE_USE_INDEX : bool
         ,S_QUESTION_FILE_PATH : str
         ,S_SCORE_FILE_PATH : str
-        ,S_PROGRAM_STATE_FILE_PATH : str
     }
 
     try:
