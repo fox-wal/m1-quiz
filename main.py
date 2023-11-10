@@ -6,6 +6,27 @@ from display_messages import *
 from keys import *
 from load_files import *
 
+def sort_dict(dictionary:dict) -> dict:
+    as_list = []
+    sorted_dict = {}
+    for key, value in dictionary.items():
+        as_list.append((key, value))
+    as_list.sort(key=lambda item: item[1], reverse=True)
+    for i in as_list:
+        sorted_dict[i[0]] = i[1]
+    return sorted_dict
+
+def sort_scores(scores:dict[str, int]) -> dict[str, int]:
+    return sort_dict(scores)
+
+def print_scores(name:str, scores:dict):
+    if name not in scores:
+        print(NO_SCORES_FOR_USER.format(name))
+        return
+    print(SCORE_VIEW_HEADER)
+    for time_stamp, score in sort_scores(scores[name]).items():
+        print(SCORE_FORMAT.format(time_stamp[:-3], score))
+
 def print_answer_options(question:dict, answer_options:list[str], select_using_index:bool):
     """
     Print the answer options for a multiple-choice question.
@@ -155,12 +176,12 @@ print(RESULTS.format(questions_correct, number_of_questions, score, max_score, a
 
 ## Ask if user wants to save it.
 
-print(SAVE_SCORE_PROMPT.format(YES_NO_PROMPT_SEPARATOR.join(YES_OR_NO)))
+print(SAVE_SCORE_PROMPT.format(YES_NO_PROMPT_SEPARATOR.join(YES_NO)))
 
 while True:
     choice = input().upper()
-    if choice not in YES_OR_NO:
-        print(ENTER_ONE_OF_PROMPT.format(YES_NO_ERROR_PROMPT_SEPARATOR.join(YES_OR_NO)))
+    if choice not in YES_NO:
+        print(ENTER_ONE_OF_PROMPT.format(YES_NO_ERROR_PROMPT_SEPARATOR.join(YES_NO)))
     else:
         break
 
@@ -177,12 +198,12 @@ if choice == YES:
         scores = {}
         print(SCORES_FILE_CORRUPTED)
 
-        print(SAVE_SCORE_PROMPT.format(YES_NO_PROMPT_SEPARATOR.join(YES_OR_NO)), OVERWRITE_CORRUPTED_FILE)
+        print(SAVE_SCORE_PROMPT.format(YES_NO_PROMPT_SEPARATOR.join(YES_NO)), OVERWRITE_CORRUPTED_FILE)
 
         while True:
             choice = input().upper()
-            if choice not in YES_OR_NO:
-                print(ENTER_ONE_OF_PROMPT.format(YES_NO_ERROR_PROMPT_SEPARATOR.join(YES_OR_NO)))
+            if choice not in YES_NO:
+                print(ENTER_ONE_OF_PROMPT.format(YES_NO_ERROR_PROMPT_SEPARATOR.join(YES_NO)))
             else:
                 break
         if choice == YES:
@@ -197,5 +218,15 @@ if choice == YES:
             scores[name] = {time_stamp : adjusted_score}
         print(SCORE_SAVED)
         save_score_file(settings[S_SCORE_FILE_PATH], scores)
+
+    print(VIEW_YOUR_SCORES_PROMPT.format(YES_NO_PROMPT_SEPARATOR.join(YES_NO)))
+    while True:
+        choice = input().upper()
+        if choice in YES_NO:
+            break
+        else:
+            print(ENTER_ONE_OF_PROMPT.format(YES_NO_ERROR_PROMPT_SEPARATOR.join(YES_NO)))
+    if choice == YES:
+        print_scores(name, scores)
 
 print(GOODBYE)

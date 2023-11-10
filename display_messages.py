@@ -41,17 +41,21 @@ Adjusted score: {}
 
 # Scores
 
-SAVE_SCORE_PROMPT = "Would you like to save your score? [{}]"
 YES = "Y"
 NO = "N"
 YES_NO_PROMPT_SEPARATOR = "/"
 YES_NO_ERROR_PROMPT_SEPARATOR = " or "
-YES_OR_NO = [YES, NO]
+YES_NO = [YES, NO]
+
+SAVE_SCORE_PROMPT = "Would you like to save your score? [{}]"
+
 TIME_STAMP_FORMAT = "{:%Y-%m-%d %H:%M:%S%z}"
 SCORE_FILE_CREATED = "Score file created."
 OVERWRITE_CORRUPTED_FILE = "This will override the corrupted file."
 SCORE_SAVED = "Score saved!"
 VIEW_YOUR_SCORES_PROMPT = "Would you like to view all your saved scores? [{}]"
-SCORE_FORMAT = "[{}] {}%"
+SCORE_VIEW_HEADER = """Timestamp        Score
+----------------------"""
+SCORE_FORMAT = "{}   {:3d}"
 
-GOODBYE = "Goodbye!"
+GOODBYE = "\nGoodbye!"
