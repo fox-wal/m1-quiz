@@ -4,6 +4,9 @@ from file_paths import CONFIG_FILE_PATH
 import json as json
 
 class KeyMissingError(Exception):
+    """
+    An exception to be raised when an essential key is missing from a dictionary.
+    """
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
 
@@ -43,16 +46,13 @@ def format(json_object:dict, template:dict) -> dict:
 
 def parse_json_file(path:str, template:dict, is_list:bool) -> list[dict] | dict:
     """
-    Args:
+    Parameters:
         path : str
             The path of the file to be loaded and parsed.
         template : dict
             Contains the expected keys and respective value types.
         is_list : bool
             Whether the file contains a dictionary that fits the given `template` (`False`) or a list of such dictionaries (`True`)
-
-    Returns:
-        A list/dictionary containing items that fit the `template`.
 
     Raises:
         FileNotFoundError
@@ -61,6 +61,9 @@ def parse_json_file(path:str, template:dict, is_list:bool) -> list[dict] | dict:
             If some values are of the wrong type.
         KeyMissingError
             If the file does not contain all the required keys.
+
+    Returns:
+        A list/dictionary containing items that fit the `template`.
     """
 
     # Load
@@ -83,6 +86,8 @@ def parse_json_file(path:str, template:dict, is_list:bool) -> list[dict] | dict:
         else:
             result = format(dict(file_contents), template)
 
+    # Close file
+
     except Exception as e:
         raise e
     else:
@@ -93,12 +98,14 @@ def parse_json_file(path:str, template:dict, is_list:bool) -> list[dict] | dict:
 def load_config_file() -> dict:
     """
     Load and parse configuration file.
+    
+    Will abend upon faulty config file.
 
     Returns:
         A `dict[str, ?]` containing all the config settings, if they were each present and of the correct type.
-    
-    Will abend upon faulty config file.
     """
+
+    # Template
 
     settings:dict = {
         S_MULTIPLE_CHOICE : bool
@@ -108,6 +115,8 @@ def load_config_file() -> dict:
         ,S_QUESTION_FILE_PATH : str
         ,S_SCORE_FILE_PATH : str
     }
+
+    # Try to parse.
 
     try:
         settings = parse_json_file(CONFIG_FILE_PATH, settings, False)
@@ -124,25 +133,29 @@ def load_config_file() -> dict:
 
     return settings
 
-def load_questions_file(file_path : str) -> list[dict]:
+def load_questions_file(file_path:str) -> list[dict]:
     """
     Load and parse questions file.
+    
+    Will abend upon faulty question file.
 
     Parameters:
         file_path : str
             Path to the questions file.
 
     Returns:
-        A `dict[str, ?]` object containing the loaded questions.
-    
-    Will abend upon faulty question file.
+        A `list[dict[str, ?]]` containing the loaded questions.
     """
+
+    # Template
 
     question_template = {
         Q_QUESTION : str
         ,Q_ANSWER : str
         ,Q_ANSWER_OPTIONS : list[str]
     }
+
+    # Try to parse
 
     try:
         questions:list[dict] = parse_json_file(file_path, question_template, True)
@@ -155,8 +168,14 @@ def load_questions_file(file_path : str) -> list[dict]:
     else:
         return questions
 
-def load_score_file(file_path : str) -> dict[str, dict[str, int]]:
+def load_score_file(file_path:str) -> dict[str, dict[str, int]]:
     """
+    Load and parse score file.
+
+    Parameters:
+        file_path : str
+            The path to the score file.
+
     Raises:
         FileNotFoundError
         ValueError
@@ -188,6 +207,15 @@ def load_score_file(file_path : str) -> dict[str, dict[str, int]]:
     return contents
 
 def save_score_file(file_path : str, scores:dict[str, dict[str, int]]):
+    """
+    Save `scores` to the score file. Overwrites curent file contents.
+
+    Parameters:
+        file_path : str
+            Path to the score file.
+        scores : dict[str, dict[str, int]]
+            The scores to save tp the file.
+    """
     file = open(file_path, "w")
     try:
         json.dump(scores, file)
