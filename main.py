@@ -4,9 +4,10 @@ from error_messages import *
 from display_messages import *
 from keys import *
 from load_files import *
+from display import DisplayText
 
 def sort_dict(dictionary:dict) -> dict:
-    """
+    '''
     Sort items in a `dictionary` in descending order according to its values.
 
     Parameters:
@@ -15,7 +16,7 @@ def sort_dict(dictionary:dict) -> dict:
     
     Returns:
         The sorted dictionary.
-    """
+    '''
     as_list = []
     sorted_dict = {}
     for key, value in dictionary.items():
@@ -26,7 +27,7 @@ def sort_dict(dictionary:dict) -> dict:
     return sorted_dict
 
 def sort_scores(scores:dict[str, int]) -> dict[str, int]:
-    """
+    '''
     Sort a scores dictionary according to the scores in descending order.
 
     Parameters:
@@ -35,11 +36,11 @@ def sort_scores(scores:dict[str, int]) -> dict[str, int]:
     
     Returns:
         The sorted `scores`.
-    """
+    '''
     return sort_dict(scores)
 
 def print_scores(name:str, scores:dict[str, dict[str, int]]):
-    """
+    '''
     Display the timestamps and scores saved under the specified `name` in order of score (descending).
 
     Parameters:
@@ -47,16 +48,16 @@ def print_scores(name:str, scores:dict[str, dict[str, int]]):
             Scores saved under this name will be displayed.
         scores: dict[str, dict[str, int]]
             All the saved scores.
-    """
+    '''
     if name not in scores:
         print(NO_SCORES_FOR_USER.format(name))
         return
-    print(SCORE_VIEW_HEADER)
+    print(DisplayText.SCORE_TABLE_HEADER)
     for time_stamp, score in sort_scores(scores[name]).items():
-        print(SCORE_FORMAT.format(time_stamp[:-3], score))
+        print(DisplayText.SCORE_TABLE_ROW.format(time_stamp[:-3], score))
 
 def print_answer_options(answer_options:list[str], select_using_index:bool):
-    """
+    '''
     Print the answer options for a multiple-choice question.
 
     Parameters:
@@ -65,23 +66,23 @@ def print_answer_options(answer_options:list[str], select_using_index:bool):
         select_using_index : bool
             If True: the user must enter the index of the answer they think is correct.
             If False: the user must enter the answer they think is correct.
-    """
+    '''
 
     for o in range(len(answer_options)):
         if select_using_index:
-            print(MULTI_CHOICE_OPTION_WITH_INDEX_LINE.format(o + 1, answer_options[o]))
+            print(DisplayText.INDEXED_ANSWER_OPTION.format(o + 1, answer_options[o]))
         else:
-            print(answer_options[o])
+            print(DisplayText.ANSWER_OPTION.format(answer_options[o]))
 
     # Prompt user to choose.
     
     if select_using_index:
-        print(MULTI_CHOICE_INDEX_PROMPT)
+        print(DisplayText.Prompt.ANSWER_BY_INDEX)
     else:
-        print(TYPE_IN_ANSWER_PROMPT)
+        print(DisplayText.Prompt.ANSWER_TYPED)
 
 def get_answer_results(points:int, multiple_choice:bool, select_using_index:bool, max_attempts:int, answer:str, answer_options:list[str] = []) -> tuple[int, bool]:
-    """
+    '''
     User types in/selects an answer.
 
     Parameters:
@@ -102,7 +103,7 @@ def get_answer_results(points:int, multiple_choice:bool, select_using_index:bool
         `tuple[int, bool]`
             The `int` is the number of points the user earned for this question.
             The `bool` is whether or not the user entered the correct answer.
-    """
+    '''
 
     attempt = 1
     correct = False
@@ -126,29 +127,29 @@ def get_answer_results(points:int, multiple_choice:bool, select_using_index:bool
         # Type in answer
 
         else:
-            print(TYPE_IN_ANSWER_PROMPT)
+            print(DisplayText.Prompt.ANSWER_TYPED)
             correct = input().lower() == answer.lower()
 
         # Calculate points + attempts.
 
         if not correct:
-            print(INCORRECT.format(max_attempts - attempt))
+            print(DisplayText.INCORRECT.format(max_attempts - attempt))
             points -= 1
         attempt += 1
 
     return (points, correct)
 
 def get_user_name() -> str:
-    """
+    '''
     Prompt the user to enter a valid name until they do so.
 
     Returns:
         Valid user name.
-    """
+    '''
     while True:
-        name = input(NAME_PROMPT)
-        if "\"" in name:
-            print(INVALID_CHARACTER.format("\""))
+        name = input(DisplayText.Prompt.NAME)
+        if '"' in name:
+            print(INVALID_CHARACTER.format('"'))
         else:
             return name
 
@@ -165,7 +166,7 @@ questions = load_questions_file(settings[S_QUESTION_FILE_PATH])
 # Welcome #
 #---------#
 
-print(WELCOME)
+print(DisplayText.WELCOME)
 name = get_user_name()
 
 #------------#
@@ -180,7 +181,7 @@ for q in range(number_of_questions):
 
     # Print question.
 
-    print(QUESTION_LINE.format(q + 1, number_of_questions, questions[q][Q_QUESTION]))
+    print(DisplayText.QUESTION.format(q + 1, number_of_questions, questions[q][Q_QUESTION]))
     
     # [Multiple choice] Print answer options.
 
@@ -212,18 +213,18 @@ for q in range(number_of_questions):
     # Process answer results.
 
     if correct:
-        print(CORRECT.format(points))
+        print(DisplayText.CORRECT.format(points))
         score += points
         questions_correct += 1
     
-    print(SCORE_SO_FAR.format(score))
+    print(DisplayText.CURRENT_SCORE.format(score))
 
 #--------------#
 # Quiz Results #
 #--------------#
 
 adjusted_score = int(100 * (score / max_score))
-print(RESULTS.format(questions_correct, number_of_questions, score, max_score, adjusted_score))
+print(DisplayText.RESULTS.format(questions_correct, number_of_questions, score, max_score, adjusted_score))
 
 #------------#
 # Save Score #
@@ -231,17 +232,17 @@ print(RESULTS.format(questions_correct, number_of_questions, score, max_score, a
 
 # Ask if user wants to save it.
 
-print(SAVE_SCORE_PROMPT.format(YES_NO_PROMPT_SEPARATOR.join(YES_NO)))
+print(DisplayText.Prompt.SAVE_SCORE.format('/'.join(['Yes', 'No'])))
 
 while True:
     choice = input().upper()
-    if choice not in YES_NO:
-        print(ENTER_ONE_OF_PROMPT.format(YES_NO_ERROR_PROMPT_SEPARATOR.join(YES_NO)))
+    if choice not in ['Yes', 'No']:
+        print(ENTER_ONE_OF_PROMPT.format('/'.join(['Yes', 'No'])))
     else:
         break
 
-if choice == YES:
-    time_stamp = TIME_STAMP_FORMAT.format(dt.datetime.now())
+if choice == 'YES':
+    time_stamp = DisplayText.TIME_STAMP.format(dt.datetime.now())
     scores : dict[str, dict[str, int]] = {}
 
     # Load scores.
@@ -249,23 +250,23 @@ if choice == YES:
     try:
         scores = load_score_file(settings[S_SCORE_FILE_PATH])
     except FileNotFoundError:
-        print(SCORE_FILE_CREATED)
+        print('DEBUG: Score file created.')
     except ValueError:
         scores = {}
         print(SCORES_FILE_CORRUPTED)
 
         # Ask if user wants to overwrite the corrupted file with their new score.
-        print(SAVE_SCORE_PROMPT.format(YES_NO_PROMPT_SEPARATOR.join(YES_NO)), OVERWRITE_CORRUPTED_FILE)
+        print(DisplayText.Prompt.SAVE_SCORE.format('/'.join(['Yes', 'No'])), DisplayText.Prompt.OVERWRITE_CORRUPTED_SCORES)
 
         while True:
             choice = input().upper()
-            if choice not in YES_NO:
-                print(ENTER_ONE_OF_PROMPT.format(YES_NO_ERROR_PROMPT_SEPARATOR.join(YES_NO)))
+            if choice not in ['Yes', 'No']:
+                print(ENTER_ONE_OF_PROMPT.format('/'.join(['Yes', 'No'])))
             else:
                 break
-        if choice == YES:
+        if choice == 'YES':
             scores[name] = {time_stamp : adjusted_score}
-            print(SCORE_SAVED)
+            print(DisplayText.SCORE_SAVED)
             save_score_file(settings[S_SCORE_FILE_PATH], scores)
     else:
         
@@ -275,23 +276,23 @@ if choice == YES:
             scores[name][time_stamp] = adjusted_score
         else:
             scores[name] = {time_stamp : adjusted_score}
-        print(SCORE_SAVED)
+        print(DisplayText.SCORE_SAVED)
         save_score_file(settings[S_SCORE_FILE_PATH], scores)
 
     # View scores.
 
-    print(VIEW_YOUR_SCORES_PROMPT.format(YES_NO_PROMPT_SEPARATOR.join(YES_NO)))
+    print(DisplayText.Prompt.VIEW_SCORES.format('/'.join(['Yes', 'No'])))
     while True:
         choice = input().upper()
-        if choice in YES_NO:
+        if choice in ['Yes', 'No']:
             break
         else:
-            print(ENTER_ONE_OF_PROMPT.format(YES_NO_ERROR_PROMPT_SEPARATOR.join(YES_NO)))
-    if choice == YES:
+            print(ENTER_ONE_OF_PROMPT.format('/'.join(['Yes', 'No'])))
+    if choice == "YES":
         print_scores(name, scores)
 
 #------#
 # Exit #
 #------#
 
-print(GOODBYE)
+print(DisplayText.GOODBYE)

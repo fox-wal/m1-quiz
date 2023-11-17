@@ -4,14 +4,14 @@ from file_paths import CONFIG_FILE_PATH
 import json as json
 
 class KeyMissingError(Exception):
-    """
+    '''
     An exception to be raised when an essential key is missing from a dictionary.
-    """
+    '''
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
 
 def format(json_object:dict, template:dict) -> dict:
-    """
+    '''
     Check if an item from a json file is of the correct format.
 
     Parameters:
@@ -28,7 +28,7 @@ def format(json_object:dict, template:dict) -> dict:
     
     Returns:
         The `json_object` formatted according to the `template`.
-    """
+    '''
     
     result = {}
     
@@ -45,7 +45,7 @@ def format(json_object:dict, template:dict) -> dict:
     return result
 
 def parse_json_file(path:str, template:dict, is_list:bool) -> list[dict] | dict:
-    """
+    '''
     Parameters:
         path : str
             The path of the file to be loaded and parsed.
@@ -64,11 +64,11 @@ def parse_json_file(path:str, template:dict, is_list:bool) -> list[dict] | dict:
 
     Returns:
         A list/dictionary containing items that fit the `template`.
-    """
+    '''
 
     # Load
 
-    file = open(path, "r")
+    file = open(path, 'r')
 
     if is_list:
         result = []
@@ -96,14 +96,14 @@ def parse_json_file(path:str, template:dict, is_list:bool) -> list[dict] | dict:
         file.close()
 
 def load_config_file() -> dict:
-    """
+    '''
     Load and parse configuration file.
     
     Will abend upon faulty config file.
 
     Returns:
         A `dict[str, ?]` containing all the config settings, if they were each present and of the correct type.
-    """
+    '''
 
     # Template
 
@@ -134,7 +134,7 @@ def load_config_file() -> dict:
     return settings
 
 def load_questions_file(file_path:str) -> list[dict]:
-    """
+    '''
     Load and parse questions file.
     
     Will abend upon faulty question file.
@@ -145,7 +145,7 @@ def load_questions_file(file_path:str) -> list[dict]:
 
     Returns:
         A `list[dict[str, ?]]` containing the loaded questions.
-    """
+    '''
 
     # Template
 
@@ -169,7 +169,7 @@ def load_questions_file(file_path:str) -> list[dict]:
         return questions
 
 def load_score_file(file_path:str) -> dict[str, dict[str, int]]:
-    """
+    '''
     Load and parse score file.
 
     Parameters:
@@ -180,8 +180,8 @@ def load_score_file(file_path:str) -> dict[str, dict[str, int]]:
         FileNotFoundError
         ValueError
             If the scores file is formatted incorrectly.
-    """
-    file = open(file_path, "r")
+    '''
+    file = open(file_path, 'r')
     try:
         contents = dict[str, dict[str, int]](json.load(file))
     finally:
@@ -207,7 +207,7 @@ def load_score_file(file_path:str) -> dict[str, dict[str, int]]:
     return contents
 
 def save_score_file(file_path : str, scores:dict[str, dict[str, int]]):
-    """
+    '''
     Save `scores` to the score file. Overwrites curent file contents.
 
     Parameters:
@@ -215,8 +215,8 @@ def save_score_file(file_path : str, scores:dict[str, dict[str, int]]):
             Path to the score file.
         scores : dict[str, dict[str, int]]
             The scores to save tp the file.
-    """
-    file = open(file_path, "w")
+    '''
+    file = open(file_path, 'w')
     try:
         json.dump(scores, file)
     finally:

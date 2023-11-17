@@ -1,4 +1,4 @@
-from display_messages import PROGRAM_ABENDED
+from display import DisplayText
 
 INVALID_CHARACTER = "Invalid character: {}"
 ENTER_INDEX_IN_CORRECT_RANGE_PROMPT = "Please enter an integer between {} and {}."
@@ -23,5 +23,5 @@ SCORES_FILE_CORRUPTED = "Scores file is corrupted."
 NO_SCORES_FOR_USER = "No scores found for user \"{}\"."
 
 def abend(message):
-	print(PROGRAM_ABENDED, message)
+	print(DisplayText.PROGRAM_ABENDED, message)
 	exit()
