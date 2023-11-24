@@ -2,7 +2,9 @@ from dataclasses import dataclass
 
 @dataclass
 class DisplayText:
+
     class Prompt:
+
         NAME : str
         '''Prompt the user to enter their name.'''
         ANSWER_TYPED : str
@@ -15,6 +17,24 @@ class DisplayText:
         '''Ask the user whether they want to view all of their previous scores.'''
         OVERWRITE_CORRUPTED_SCORES : str
         '''Ask the user whether they want their new score to overwrite everything in the corrupted score file.'''
+        VALID_INDEX : str
+        '''
+        Prompt the user to enter a valid index.
+
+        Arguments:
+
+        1. The minimum allowed index.
+        2. The maximum allowed index.
+        '''
+        VALID_OPTION : str
+        '''
+        Prompt the user to enter a valid option.
+
+        Arguments:
+
+        1. The valid options.
+        '''
+
     WELCOME : str
     '''Welcome the user to the quiz.'''
     SCORE_TABLE_HEADER : str
@@ -25,7 +45,7 @@ class DisplayText:
     '''
     Use to format a question.
 
-    Format elements:
+    Arguments:
 
     1. Question number
     2. Number of questions
@@ -35,7 +55,7 @@ class DisplayText:
     '''
     Use to format an indexed answer option.
 
-    Format elements:
+    Arguments:
 
     1. Index
     2. Answer option
@@ -50,7 +70,7 @@ class DisplayText:
     '''
     Inform the user their answer was correct.
 
-    Format elements:
+    Arguments:
 
     1. Points earned
     '''
@@ -58,7 +78,7 @@ class DisplayText:
     '''
     Inform the user their answer was incorrect.
 
-    Format elements:
+    Arguments:
 
     1. Number of remaining attempts
     '''
@@ -66,7 +86,7 @@ class DisplayText:
     '''
     Inform the user of their current score.
 
-    Format elements:
+    Arguments:
 
     1. Current score
     '''
@@ -74,7 +94,7 @@ class DisplayText:
     '''
     Use to format a summary of the results of the quiz.
 
-    Format elements:
+    Arguments:
 
     1. # correct answers
     2. # questions
@@ -86,7 +106,7 @@ class DisplayText:
     '''
     Use to format a timestamp.
 
-    Format elements:
+    Arguments:
 
     1. Year
     2. Month
@@ -95,16 +115,32 @@ class DisplayText:
     5. Minute
     6. Second
     '''
+    NO_SCORES_FOR_USER : str
+    '''
+    Inform the user that no previous scores have been found for them.
+
+    Arguments:
+
+    1. User's name
+    '''
     SCORE_TABLE_ROW : str
     '''
     A row for the score table.
 
-    Format elements:
+    Arguments:
 
     1. Timestamp (formatted, max length 16)
     2. Score (integer, max 3 digits)
     '''
     SCORE_SAVED : str
     '''Inform the user that their score has been saved.'''
-    PROGRAM_ABENDED : str
-    '''Inform the user that the program has abended.'''
+    INVALID_CHARACTER : str
+    '''
+    Error message for when the user enters an input containing an invalid character.
+
+    Arguments:
+
+    1. The character in question.
+    '''
+    COULD_NOT_SAVE_SCORE : str
+    '''Error message for when the user's score could not be saved to the score file.'''
