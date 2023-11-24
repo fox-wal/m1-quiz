@@ -1,0 +1,10 @@
+{
+    "number_of_questions" : 3
+    ,"number_of_attempts" : 1
+	,"multiple_choice" : true
+    ,"select_using_index" : true
+    ,"question_file_path" : "data/questions.json"
+    ,"score_file_path" : "data/scores.json"
+    ,"display_text_file_path" : "data/display-text.json"
+    ,"prompt_file_path" : "data/prompts.json"
+}

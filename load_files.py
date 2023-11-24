@@ -1,5 +1,4 @@
 from error_handling import *
-from file_paths import CONFIG_FILE_PATH
 import json as json
 
 class KeyMissingError(Exception):
@@ -94,11 +93,15 @@ def parse_json_file(path:str, template:dict, is_list:bool) -> list[dict] | dict:
     finally:
         file.close()
 
-def load_config_file() -> dict:
+def load_config_file(file_path:str) -> dict:
     '''
     Load and parse configuration file.
     
     Will abend upon faulty config file.
+
+    Parameters:
+        file_path : str
+            Path to the configuration file.
 
     Returns:
         A `dict[str, ?]` containing all the config settings, if they were each present and of the correct type.
@@ -118,13 +121,13 @@ def load_config_file() -> dict:
     # Try to parse.
 
     try:
-        settings = parse_json_file(CONFIG_FILE_PATH, settings, False)
+        settings = parse_json_file(file_path, settings, False)
     except FileNotFoundError:
-        abend(ErrorMessages.FILE_NOT_FOUND.format(CONFIG_FILE_PATH))
+        abend(ErrorMessages.FILE_NOT_FOUND.format(file_path))
     except KeyMissingError:
-        abend(ErrorMessages.FILE_INCOMPLETE.format(CONFIG_FILE_PATH))
+        abend(ErrorMessages.FILE_INCOMPLETE.format(file_path))
     except ValueError:
-        abend(ErrorMessages.FILE_CORRUPTED.format(CONFIG_FILE_PATH))
+        abend(ErrorMessages.FILE_CORRUPTED.format(file_path))
     else:    
         # Ensure numbers of attempts and questions are at least 1.
         settings[S_NUMBER_OF_ATTEMPTS] = max(1, settings[S_NUMBER_OF_ATTEMPTS])

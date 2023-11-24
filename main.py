@@ -160,7 +160,9 @@ def get_user_name() -> str:
 
 # Load essential files
 
-settings:Config = load_config_file()
+CONFIG_FILE_PATH = "data/config.json"
+
+settings:Config = load_config_file(CONFIG_FILE_PATH)
 questions:list[Question] = load_questions_file(settings.get_question_file_path)
 
 #---------#
