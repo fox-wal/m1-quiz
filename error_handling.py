@@ -25,10 +25,10 @@ class ErrorMessages:
             1. File path
     '''
 
-    PROGRAM_ABENDED : str
-    FILE_NOT_FOUND : str
-    FILE_INCOMPLETE : str
-    FILE_CORRUPTED : str
+    PROGRAM_ABENDED : str = 'Program abended.'
+    FILE_NOT_FOUND : str = 'File "{}" not found.'
+    FILE_INCOMPLETE : str = 'File "{}" incomplete.'
+    FILE_CORRUPTED : str = 'File "{}" corrupted.'
 
 def abend(error_message):
     '''

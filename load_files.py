@@ -1,5 +1,9 @@
+import json
+import jsonpickle
+
 from error_handling import *
-import json as json
+from question import Question
+from config import Config
 
 class KeyMissingError(Exception):
     '''
@@ -74,7 +78,7 @@ def parse_json_file(path:str, template:dict, is_list:bool) -> list[dict] | dict:
         result = {}
 
     try:
-        file_contents = json.load(file)
+        file_contents = jsonpickle.decode(file)
 
         # Format
 
@@ -93,49 +97,41 @@ def parse_json_file(path:str, template:dict, is_list:bool) -> list[dict] | dict:
     finally:
         file.close()
 
-def load_config_file(file_path:str) -> dict:
+def load_config_file(file_path:str) -> Config:
     '''
     Load and parse configuration file.
     
-    Will abend upon faulty config file.
+    Will abend if the config file is:
+
+    - Not found
+    - Empty
+    - Corrupted
 
     Parameters:
         file_path : str
             Path to the configuration file.
 
     Returns:
-        A `dict[str, ?]` containing all the config settings, if they were each present and of the correct type.
+        A new, populated instance of `Config` containing all the config settings, if they were all present and of the correct type.
     '''
 
-    # Template
-
-    settings:dict = {
-        S_MULTIPLE_CHOICE : bool
-        ,S_NUMBER_OF_QUESTIONS : int
-        ,S_NUMBER_OF_ATTEMPTS : int
-        ,S_MULTIPLE_CHOICE_USE_INDEX : bool
-        ,S_QUESTION_FILE_PATH : str
-        ,S_SCORE_FILE_PATH : str
-    }
-
-    # Try to parse.
-
     try:
-        settings = parse_json_file(file_path, settings, False)
+        file = open(file_path, 'r')
+        settings:Config = Config(*tuple(json.load(file).values()))
     except FileNotFoundError:
         abend(ErrorMessages.FILE_NOT_FOUND.format(file_path))
-    except KeyMissingError:
+    except TypeError:
         abend(ErrorMessages.FILE_INCOMPLETE.format(file_path))
     except ValueError:
         abend(ErrorMessages.FILE_CORRUPTED.format(file_path))
-    else:    
-        # Ensure numbers of attempts and questions are at least 1.
-        settings[S_NUMBER_OF_ATTEMPTS] = max(1, settings[S_NUMBER_OF_ATTEMPTS])
-        settings[S_NUMBER_OF_QUESTIONS] = max(1, settings[S_NUMBER_OF_QUESTIONS])
+    else:
+        return settings
+    finally:
+        file.close()
+    
+    abend("Unhandled exception.")
 
-    return settings
-
-def load_questions_file(file_path:str) -> list[dict]:
+def load_questions_file(file_path:str) -> list[Question]:
     '''
     Load and parse questions file.
     

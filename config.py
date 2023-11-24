@@ -22,8 +22,9 @@ class Config:
     '''
 
     def __init__(self, number_of_questions:int, number_of_attempts:int, multiple_choice:bool, select_using_index:bool, question_file_path:str, score_file_path:str, display_text_file_path:str, prompt_file_path:str):
-        self.__number_of_questions = number_of_questions
-        self.__number_of_attempts = number_of_attempts
+        # Ensure numbers of attempts and questions are at least 1.
+        self.__number_of_questions = max(1, number_of_questions)
+        self.__number_of_attempts = max(1, number_of_attempts)
         self.__multiple_choice = multiple_choice
         self.__select_using_index = select_using_index
         self.__question_file_path = question_file_path
