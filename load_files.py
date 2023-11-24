@@ -1,5 +1,4 @@
-from error_messages import *
-from keys import *
+from error_handling import *
 from file_paths import CONFIG_FILE_PATH
 import json as json
 
@@ -121,11 +120,11 @@ def load_config_file() -> dict:
     try:
         settings = parse_json_file(CONFIG_FILE_PATH, settings, False)
     except FileNotFoundError:
-        abend(CONFIG_FILE_NOT_FOUND)
+        abend(ErrorMessages.FILE_NOT_FOUND.format(CONFIG_FILE_PATH))
     except KeyMissingError:
-        abend(SETTINGS_MISSING)
+        abend(ErrorMessages.FILE_INCOMPLETE.format(CONFIG_FILE_PATH))
     except ValueError:
-        abend(SETTINGS_WRONG_TYPE)
+        abend(ErrorMessages.FILE_CORRUPTED.format(CONFIG_FILE_PATH))
     else:    
         # Ensure numbers of attempts and questions are at least 1.
         settings[S_NUMBER_OF_ATTEMPTS] = max(1, settings[S_NUMBER_OF_ATTEMPTS])
@@ -160,11 +159,11 @@ def load_questions_file(file_path:str) -> list[dict]:
     try:
         questions:list[dict] = parse_json_file(file_path, question_template, True)
         if len(questions) == 0:
-            abend(QUESTION_FILE_EMPTY)
+            abend(ErrorMessages.FILE_INCOMPLETE.format(file_path))
     except FileNotFoundError:
-        abend(QUESTION_FILE_NOT_FOUND)
+        abend(ErrorMessages.FILE_NOT_FOUND.format(file_path))
     except KeyMissingError or ValueError:
-        abend(FAULTY_QUESTIONS)
+        abend(ErrorMessages.FILE_CORRUPTED.format(file_path))
     else:
         return questions
 

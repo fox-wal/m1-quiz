@@ -1,10 +1,11 @@
 from random import shuffle
 import datetime as dt
-from error_messages import *
-from display_messages import *
-from keys import *
+from error_handling import *
+from display import *
 from load_files import *
-from display import DisplayText
+from display import DisplayText, Prompts
+from config import Config
+from question import Question
 
 def sort_dict(dictionary:dict) -> dict:
     '''
@@ -50,7 +51,7 @@ def print_scores(name:str, scores:dict[str, dict[str, int]]):
             All the saved scores.
     '''
     if name not in scores:
-        print(NO_SCORES_FOR_USER.format(name))
+        print(DisplayText.NO_SCORES_FOR_USER.format(name))
         return
     print(DisplayText.SCORE_TABLE_HEADER)
     for time_stamp, score in sort_scores(scores[name]).items():
@@ -77,9 +78,9 @@ def print_answer_options(answer_options:list[str], select_using_index:bool):
     # Prompt user to choose.
     
     if select_using_index:
-        print(DisplayText.Prompt.ANSWER_BY_INDEX)
+        print(Prompts.ANSWER_BY_INDEX)
     else:
-        print(DisplayText.Prompt.ANSWER_TYPED)
+        print(Prompts.ANSWER_TYPED)
 
 def get_answer_results(points:int, multiple_choice:bool, select_using_index:bool, max_attempts:int, answer:str, answer_options:list[str] = []) -> tuple[int, bool]:
     '''
@@ -119,7 +120,7 @@ def get_answer_results(points:int, multiple_choice:bool, select_using_index:bool
                     if choice not in range(len(answer_options)):
                         raise ValueError
                 except ValueError:
-                    print(ENTER_INDEX_IN_CORRECT_RANGE_PROMPT.format(1, len(answer_options)))
+                    print(Prompts.VALID_INDEX.format(1, len(answer_options)))
                 else:
                     break
             correct = answer_options[choice] == answer
@@ -127,7 +128,7 @@ def get_answer_results(points:int, multiple_choice:bool, select_using_index:bool
         # Type in answer
 
         else:
-            print(DisplayText.Prompt.ANSWER_TYPED)
+            print(Prompts.ANSWER_TYPED)
             correct = input().lower() == answer.lower()
 
         # Calculate points + attempts.
@@ -147,9 +148,9 @@ def get_user_name() -> str:
         Valid user name.
     '''
     while True:
-        name = input(DisplayText.Prompt.NAME)
+        name = input(Prompts.NAME)
         if '"' in name:
-            print(INVALID_CHARACTER.format('"'))
+            print(DisplayText.INVALID_CHARACTER.format('"'))
         else:
             return name
 
@@ -159,8 +160,8 @@ def get_user_name() -> str:
 
 # Load essential files
 
-settings = load_config_file()
-questions = load_questions_file(settings[S_QUESTION_FILE_PATH])
+settings:Config = load_config_file()
+questions:list[Question] = load_questions_file(settings.get_question_file_path)
 
 #---------#
 # Welcome #
@@ -176,24 +177,24 @@ name = get_user_name()
 max_score = 0
 score = 0
 questions_correct = 0
-number_of_questions = min(len(questions), settings[S_NUMBER_OF_QUESTIONS])
+number_of_questions = min(len(questions), settings.get_number_of_questions)
 for q in range(number_of_questions):
 
     # Print question.
 
-    print(DisplayText.QUESTION.format(q + 1, number_of_questions, questions[q][Q_QUESTION]))
+    print(DisplayText.QUESTION.format(q + 1, number_of_questions, questions[q].get_question))
     
     # [Multiple choice] Print answer options.
 
-    answer_options = questions[q][Q_ANSWER_OPTIONS] + [questions[q][Q_ANSWER]]
-    attempts = settings[S_NUMBER_OF_ATTEMPTS]
+    answer_options = questions[q].get_answer_options
     shuffle(answer_options)
-    if settings[S_MULTIPLE_CHOICE]:
+    attempts = settings.get_number_of_attempts
+    if settings.get_multiple_choice:
         # Ensure number of attempts does not exceed the number of incorrect answer options.
-        attempts = min(settings[S_NUMBER_OF_ATTEMPTS], len(questions[q][Q_ANSWER_OPTIONS]))
+        attempts = min(settings.get_number_of_attempts, len(questions[q].get_answer_options) - 1)
         print_answer_options(
-            select_using_index=settings[S_MULTIPLE_CHOICE_USE_INDEX]
-            ,answer_options=answer_options
+            select_using_index = settings.get_select_using_index
+            ,answer_options    = questions[q].get_answer_options
         )
 
     # User enters answer.
@@ -202,12 +203,12 @@ for q in range(number_of_questions):
     max_score += points
 
     points, correct = get_answer_results(
-        points=points
-        ,multiple_choice=settings[S_MULTIPLE_CHOICE]
-        ,select_using_index=settings[S_MULTIPLE_CHOICE_USE_INDEX]
-        ,max_attempts=attempts
-        ,answer=questions[q][Q_ANSWER]
-        ,answer_options=answer_options
+        points              = points
+        ,multiple_choice    = settings.get_multiple_choice
+        ,select_using_index = settings.get_select_using_index
+        ,max_attempts       = attempts
+        ,answer             = questions[q].get_answer
+        ,answer_options     = answer_options
     )
 
     # Process answer results.
@@ -232,12 +233,12 @@ print(DisplayText.RESULTS.format(questions_correct, number_of_questions, score, 
 
 # Ask if user wants to save it.
 
-print(DisplayText.Prompt.SAVE_SCORE.format('/'.join(['Yes', 'No'])))
+print(Prompts.SAVE_SCORE.format('/'.join(['Yes', 'No'])))
 
 while True:
     choice = input().upper()
     if choice not in ['Yes', 'No']:
-        print(ENTER_ONE_OF_PROMPT.format('/'.join(['Yes', 'No'])))
+        print(Prompts.VALID_OPTION.format('/'.join(['Yes', 'No'])))
     else:
         break
 
@@ -248,26 +249,26 @@ if choice == 'YES':
     # Load scores.
 
     try:
-        scores = load_score_file(settings[S_SCORE_FILE_PATH])
+        scores = load_score_file(settings.get_score_file_path)
     except FileNotFoundError:
         print('DEBUG: Score file created.')
     except ValueError:
         scores = {}
-        print(SCORES_FILE_CORRUPTED)
+        print(ErrorMessages.FILE_CORRUPTED.format(settings.get_score_file_path))
 
         # Ask if user wants to overwrite the corrupted file with their new score.
-        print(DisplayText.Prompt.SAVE_SCORE.format('/'.join(['Yes', 'No'])), DisplayText.Prompt.OVERWRITE_CORRUPTED_SCORES)
+        print(Prompts.SAVE_SCORE.format('/'.join(['Yes', 'No'])), Prompts.OVERWRITE_CORRUPTED_SCORES)
 
         while True:
             choice = input().upper()
             if choice not in ['Yes', 'No']:
-                print(ENTER_ONE_OF_PROMPT.format('/'.join(['Yes', 'No'])))
+                print(Prompts.VALID_OPTION.format('/'.join(['Yes', 'No'])))
             else:
                 break
         if choice == 'YES':
             scores[name] = {time_stamp : adjusted_score}
             print(DisplayText.SCORE_SAVED)
-            save_score_file(settings[S_SCORE_FILE_PATH], scores)
+            save_score_file(settings.get_score_file_path, scores)
     else:
         
         # Save scores.
@@ -277,17 +278,17 @@ if choice == 'YES':
         else:
             scores[name] = {time_stamp : adjusted_score}
         print(DisplayText.SCORE_SAVED)
-        save_score_file(settings[S_SCORE_FILE_PATH], scores)
+        save_score_file(settings.get_score_file_path, scores)
 
     # View scores.
 
-    print(DisplayText.Prompt.VIEW_SCORES.format('/'.join(['Yes', 'No'])))
+    print(Prompts.VIEW_SCORES.format('/'.join(['Yes', 'No'])))
     while True:
         choice = input().upper()
         if choice in ['Yes', 'No']:
             break
         else:
-            print(ENTER_ONE_OF_PROMPT.format('/'.join(['Yes', 'No'])))
+            print(Prompts.VALID_OPTION.format('/'.join(['Yes', 'No'])))
     if choice == "YES":
         print_scores(name, scores)
 

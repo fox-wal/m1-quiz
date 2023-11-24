@@ -1,8 +1,10 @@
 {
-	"multiple choice" : true
-    ,"number of questions" : 3
-    ,"number of attempts" : 1
-    ,"multi-choice: select using index" : true
-    ,"question file path" : "questions.json"
-    ,"score file path" : "scores.json"
+    "number_of_questions" : 3
+    ,"number_of_attempts" : 1
+	,"multiple_choice" : true
+    ,"select_using_index" : true
+    ,"question_file_path" : "questions.json"
+    ,"score_file_path" : "scores.json"
+    ,"display_text_file_path" : "display-text.json"
+    ,"prompt_file_path" : "prompts.json"
 }
