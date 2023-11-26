@@ -135,6 +135,34 @@ def load_questions_file(file_path:str) -> list[Question]:
     else:
         return questions
 
+def load_display_text(file_path:str):
+    '''
+    Load values into the DisplayText class.
+
+    Will abend if the file is:
+
+    - Not found
+    - Corrupted
+    - Incomplete
+
+    Parameters:
+        file_path : str
+            The path to the file containing the values for the members of DisplayText.
+    '''
+
+    file_contents = load_file(file_path)
+
+    try:
+        values = json.loads(file_contents)
+    except ValueError:
+        abend(ErrorMessages.FILE_CORRUPTED.format(file_path))
+
+    try:
+        for k in DisplayText.__annotations__:
+            DisplayText.__annotations__[k] = values[k]
+    except IndexError:
+        abend(ErrorMessages.FILE_INCOMPLETE.format(file_path))
+
 def load_score_file(file_path:str) -> dict[str, dict[str, int]]:
     '''
     Load and parse score file.

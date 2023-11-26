@@ -164,7 +164,7 @@ CONFIG_FILE_PATH = "data/config.json"
 
 settings:Config = load_config_file(CONFIG_FILE_PATH)
 questions:list[Question] = load_questions_file(settings.get_question_file_path)
-load_display_text()
+load_display_text(settings.get_display_text_file_path)
 load_prompts()
 
 #---------#
