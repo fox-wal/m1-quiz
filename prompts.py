@@ -39,8 +39,9 @@ class Prompts:
     OVERWRITE_CORRUPTED_SCORES : str
     VALID_INDEX : str
     VALID_OPTION : str
+    YES_OR_NO : str
 
-    def set_values(self, name:str, answer_typed:str, answer_by_index:str, save_score:str, view_scores:str, overwrite_corrupted_scores:str, valid_index:str, valid_option:str):
+    def set_values(self, name:str, answer_typed:str, answer_by_index:str, save_score:str, view_scores:str, overwrite_corrupted_scores:str, valid_index:str, valid_option:str, yes_or_no:str):
         self.NAME = name
         self.ANSWER_TYPED = answer_typed
         self.ANSWER_BY_INDEX = answer_by_index
@@ -49,3 +50,4 @@ class Prompts:
         self.OVERWRITE_CORRUPTED_SCORES = overwrite_corrupted_scores
         self.VALID_INDEX = valid_index
         self.VALID_OPTION = valid_option
+        self.YES_OR_NO = yes_or_no

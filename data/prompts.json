@@ -2,9 +2,10 @@
     "NAME" : "Name: "
     ,"ANSWER_TYPED" : "\nType in the correct answer: "
     ,"ANSWER_BY_INDEX" : "\nEnter the index of the correct answer: "
-    ,"SAVE_SCORE" : "Would you like to save your score? [{}/{}]"
-    ,"VIEW_SCORES" : "Would you like to view all your saved scores? [{}/{}]"
+    ,"SAVE_SCORE" : "Would you like to save your score?"
+    ,"VIEW_SCORES" : "Would you like to view all your saved scores?"
     ,"OVERWRITE_CORRUPTED_SCORES" : "This will override the corrupted file."
     ,"VALID_INDEX" : "Please enter an integer between {} and {}."
     ,"VALID_OPTION" : "Please enter one of {}."
+    ,"YES_OR_NO" : "Enter [Y/N]:"
 }

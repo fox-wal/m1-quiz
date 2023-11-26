@@ -154,6 +154,34 @@ def get_user_name() -> str:
         else:
             return name
 
+def yes_or_no(prompt:str) -> bool:
+    '''
+    Prompt the user to enter either yes or no.
+
+    Parameters:
+        prompt : str
+            The prompt to display to the user.
+
+    Returns:
+        True if the user selects "yes".
+        False if the user selects "no".
+    '''
+
+    YES = 'Y'
+    NO = 'N'
+
+    print(prompt, Prompts.YES_OR_NO)
+
+    while True:
+        choice = input().upper()
+
+        if choice == YES:
+            return True
+        elif choice == NO:
+            return False
+        else:
+            print(Prompts.YES_OR_NO)
+
 #------------#
 # Initialize #
 #------------#
@@ -237,16 +265,9 @@ print(DisplayText.RESULTS.format(questions_correct, number_of_questions, score, 
 
 # Ask if user wants to save it.
 
-print(Prompts.SAVE_SCORE.format('/'.join(['Yes', 'No'])))
+save = yes_or_no(Prompts.SAVE_SCORE)
 
-while True:
-    choice = input().upper()
-    if choice not in ['Yes', 'No']:
-        print(Prompts.VALID_OPTION.format('/'.join(['Yes', 'No'])))
-    else:
-        break
-
-if choice == 'YES':
+if save:
     time_stamp = DisplayText.TIME_STAMP.format(dt.datetime.now())
     scores : dict[str, dict[str, int]] = {}
 
@@ -261,15 +282,9 @@ if choice == 'YES':
         print(ErrorMessages.FILE_CORRUPTED.format(settings.get_score_file_path))
 
         # Ask if user wants to overwrite the corrupted file with their new score.
-        print(Prompts.SAVE_SCORE.format('/'.join(['Yes', 'No'])), Prompts.OVERWRITE_CORRUPTED_SCORES)
+        overwrite_corrupted = yes_or_no(Prompts.SAVE_SCORE + Prompts.OVERWRITE_CORRUPTED_SCORES)
 
-        while True:
-            choice = input().upper()
-            if choice not in ['Yes', 'No']:
-                print(Prompts.VALID_OPTION.format('/'.join(['Yes', 'No'])))
-            else:
-                break
-        if choice == 'YES':
+        if overwrite_corrupted:
             scores[name] = {time_stamp : adjusted_score}
             print(DisplayText.SCORE_SAVED)
             save_score_file(settings.get_score_file_path, scores)
@@ -286,14 +301,9 @@ if choice == 'YES':
 
     # View scores.
 
-    print(Prompts.VIEW_SCORES.format('/'.join(['Yes', 'No'])))
-    while True:
-        choice = input().upper()
-        if choice in ['Yes', 'No']:
-            break
-        else:
-            print(Prompts.VALID_OPTION.format('/'.join(['Yes', 'No'])))
-    if choice == "YES":
+    view_scores = yes_or_no(Prompts.VIEW_SCORES)
+
+    if view_scores:
         print_scores(name, scores)
 
 #------#
