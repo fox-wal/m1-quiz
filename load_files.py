@@ -137,6 +137,17 @@ def load_questions_file(file_path:str) -> list[Question]:
         return questions
 
 def load_data_class(file_path:str, the_class):
+    '''
+    Load values into a non-instance class of constants.
+
+    Will abend upon a non-existent, empty, or corrupted file at the specified path.
+
+    Parameters:
+        file_path : str
+            The path to the file containing the values for `the_class`.
+        the_class : class
+            The class to load the values into. It must have a `set_values` method.
+    '''
     file_contents = load_file(file_path)
 
     try:
