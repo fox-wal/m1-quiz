@@ -136,21 +136,7 @@ def load_questions_file(file_path:str) -> list[Question]:
     else:
         return questions
 
-def load_display_text(file_path:str):
-    '''
-    Load values into the DisplayText class.
-
-    Will abend if the file is:
-
-    - Not found
-    - Corrupted
-    - Incomplete
-
-    Parameters:
-        file_path : str
-            The path to the file containing the values for the members of DisplayText.
-    '''
-
+def load_data_class(file_path:str, the_class):
     file_contents = load_file(file_path)
 
     try:
@@ -159,35 +145,8 @@ def load_display_text(file_path:str):
         abend(ErrorMessages.FILE_CORRUPTED.format(file_path))
 
     try:
-        DisplayText.set_values(DisplayText, *values.values())
-    except TypeError:
-        abend(ErrorMessages.FILE_INCOMPLETE.format(file_path))
-
-def load_prompts(file_path:str):
-    '''
-    Load values into the Prompts class.
-
-    Will abend if the file is:
-
-    - Not found
-    - Corrupted
-    - Incomplete
-
-    Parameters:
-        file_path : str
-            The path to the file containing the values for the members of Prompts.
-    '''
-
-    file_contents = load_file(file_path)
-
-    try:
-        values = json.loads(file_contents)
-    except ValueError:
-        abend(ErrorMessages.FILE_CORRUPTED.format(file_path))
-
-    try:
-        Prompts.set_values(Prompts, *values.values())
-    except TypeError:
+        the_class.set_values(the_class, *values.values())
+    except IndexError:
         abend(ErrorMessages.FILE_INCOMPLETE.format(file_path))
 
 def load_score_file(file_path:str) -> dict[str, dict[str, int]]:
