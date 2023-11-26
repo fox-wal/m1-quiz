@@ -1,4 +1,4 @@
-class Config:
+class Config(object):
     '''
     A class to store all the configuration settings for the game.
 
