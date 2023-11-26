@@ -125,8 +125,8 @@ def load_questions_file(file_path:str) -> list[Question]:
     questions:list[Question] = []
 
     try:
-        for q in list(json.loads(file_contents)):
-            questions.append(Question(*tuple(q)))
+        for question in list(json.loads(file_contents)):
+            questions.append(Question(*question.values()))
 
         if len(questions) == 0:
             abend(ErrorMessages.FILE_INCOMPLETE.format(file_path))
