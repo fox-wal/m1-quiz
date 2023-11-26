@@ -1,9 +1,9 @@
 from random import shuffle
 import datetime as dt
 from error_handling import *
-from display import *
+from display_text import DisplayText
+from prompts import Prompts
 from load_files import *
-from display import DisplayText, Prompts
 from config import Config
 from question import Question
 
@@ -165,7 +165,7 @@ CONFIG_FILE_PATH = "data/config.json"
 settings:Config = load_config_file(CONFIG_FILE_PATH)
 questions:list[Question] = load_questions_file(settings.get_question_file_path)
 load_display_text(settings.get_display_text_file_path)
-load_prompts()
+load_prompts(settings.get_prompt_file_path)
 
 #---------#
 # Welcome #

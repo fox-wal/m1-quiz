@@ -1,45 +1,3 @@
-class Prompts:
-    '''
-    A class containing all prompts.
-
-    Attributes:
-        NAME : str
-            Prompt the user to enter their name.
-        ANSWER_TYPED : str
-            Prompt the user to type in the answer.
-        ANSWER_BY_INDEX : str
-            Prompt the user to enter the index of the answer.
-        SAVE_SCORE : str
-            Ask the user whether they want to save their score.
-        VIEW_SCORES : str
-            Ask the user whether they want to view all of their previous scores.
-        OVERWRITE_CORRUPTED_SCORES : str
-            Ask the user whether they want their new score to overwrite everything in the corrupted score file.
-        VALID_INDEX : str
-            Prompt the user to enter a valid index.
-
-            Arguments:
-            
-            1. The minimum allowed index.
-            2. The maximum allowed index.
-        
-        VALID_OPTION : str
-            Prompt the user to enter a valid option.
-
-            Arguments:
-
-            1. The valid options.
-    '''
-
-    NAME : str
-    ANSWER_TYPED : str
-    ANSWER_BY_INDEX : str
-    SAVE_SCORE : str
-    VIEW_SCORES : str
-    OVERWRITE_CORRUPTED_SCORES : str
-    VALID_INDEX : str
-    VALID_OPTION : str
-
 class DisplayText:
     '''
     A class containing all non-prompt display text.
@@ -150,3 +108,21 @@ class DisplayText:
     SCORE_SAVED : str
     INVALID_CHARACTER : str
     COULD_NOT_SAVE_SCORE : str
+
+    def set_values(self, welcome:str, score_table_header:str, goodbye:str, question:str, indexed_answer_option:str, answer_option:str, correct:str, incorrect:str, current_score:str, results:str, time_stamp:str, no_scores_for_user:str, score_table_row:str, score_saved:str, invalid_character:str, could_not_save_score:str):
+        DisplayText.WELCOME = welcome
+        DisplayText.SCORE_TABLE_HEADER = score_table_header
+        DisplayText.GOODBYE = goodbye
+        DisplayText.QUESTION = question
+        DisplayText.INDEXED_ANSWER_OPTION = indexed_answer_option
+        DisplayText.ANSWER_OPTION = answer_option
+        DisplayText.CORRECT = correct
+        DisplayText.INCORRECT = incorrect
+        DisplayText.CURRENT_SCORE = current_score
+        DisplayText.RESULTS = results
+        DisplayText.TIME_STAMP = time_stamp
+        DisplayText.NO_SCORES_FOR_USER = no_scores_for_user
+        DisplayText.SCORE_TABLE_ROW = score_table_row
+        DisplayText.SCORE_SAVED = score_saved
+        DisplayText.INVALID_CHARACTER = invalid_character
+        DisplayText.COULD_NOT_SAVE_SCORE = could_not_save_score
