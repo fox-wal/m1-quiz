@@ -6,6 +6,7 @@ from prompts import Prompts
 from load_files import *
 from config import Config
 from question import Question
+from results import Results
 
 def sort_dict(dictionary:dict) -> dict:
     '''
@@ -82,7 +83,22 @@ def print_answer_options(answer_options:list[str], select_using_index:bool):
     else:
         print(Prompts.ANSWER_TYPED)
 
-def get_answer_results(points:int, multiple_choice:bool, select_using_index:bool, max_attempts:int, answer:str, answer_options:list[str] = []) -> tuple[int, bool]:
+def select_answer_using_index(question:Question) -> bool:
+    while True:
+        try:
+            choice = int(input()) - 1
+            if choice not in range(len(question.get_answer_options)):
+                raise ValueError
+        except ValueError:
+            print(Prompts.VALID_INDEX.format(1, len(question.get_answer_options)))
+        else:
+            return question.get_answer_options[choice] == question.get_answer
+
+def type_answer(question:Question) -> bool:
+    answer = input(Prompts.ANSWER_TYPED + "\n")
+    return answer.lower() == question.get_answer.lower()
+
+def get_answer(points:int, multiple_choice:bool, select_using_index:bool, max_attempts:int, question:Question) -> tuple[int, bool]:
     '''
     User types in/selects an answer.
 
@@ -111,34 +127,18 @@ def get_answer_results(points:int, multiple_choice:bool, select_using_index:bool
 
     while not correct and (attempt <= max_attempts):
 
-        # Select answer using index (multiple choice only).
-
         if multiple_choice and select_using_index:
-            while True:
-                try:
-                    choice = int(input()) - 1
-                    if choice not in range(len(answer_options)):
-                        raise ValueError
-                except ValueError:
-                    print(Prompts.VALID_INDEX.format(1, len(answer_options)))
-                else:
-                    break
-            correct = answer_options[choice] == answer
-
-        # Type in answer
-
+            correct = select_answer_using_index(question)
         else:
-            print(Prompts.ANSWER_TYPED)
-            correct = input().lower() == answer.lower()
-
-        # Calculate points + attempts.
+            correct = type_answer(question)
 
         if not correct:
             print(DisplayText.INCORRECT.format(max_attempts - attempt))
             points -= 1
+
         attempt += 1
 
-    return (points, correct)
+    return points, correct
 
 def get_user_name() -> str:
     '''
@@ -203,6 +203,61 @@ def load_essential_files() -> tuple[Config, list[Question]]:
 
     return settings, questions
 
+def do_question(question:Question, results:Results):
+
+    attempts = settings.get_number_of_attempts
+
+    if settings.get_multiple_choice:
+        shuffle(question.get_answer_options)
+        # Ensure number of attempts does not exceed the number of incorrect answer options.
+        attempts = min(settings.get_number_of_attempts, len(question.get_answer_options) - 1)
+        print_answer_options(question.get_answer_options, settings.get_select_using_index)
+
+    results.increase_max_score_by(attempts)
+
+    points, correct = get_answer(attempts, settings.get_multiple_choice, settings.get_select_using_index, attempts, question)
+
+    if correct:
+        print(DisplayText.CORRECT.format(points))
+        results.increase_score_by(points)
+        results.increment_questions_correct()
+
+    print(DisplayText.CURRENT_SCORE.format(results.get_score))
+
+def do_quiz(settings:Config, questions:list[Question]) -> Results:
+    results = Results()
+    for q in range(number_of_questions):
+        print(DisplayText.QUESTION.format(q + 1, number_of_questions, questions[q].get_question))
+        do_question(questions[q], results)
+
+    return results
+
+def save_score_to_file(user_name:str, scores:dict[str, dict[str, int]], score:int, time_stamp:str):
+    if user_name in scores.keys():
+        scores[user_name][time_stamp] = score
+    else:
+        scores[user_name] = {time_stamp : score}
+    save_score_file(settings.get_score_file_path, scores)
+    print(DisplayText.SCORE_SAVED)
+
+def load_scores(settings:Config) -> dict[str, dict[str, int]]:
+    try:
+        return load_score_file(settings.get_score_file_path)
+    except FileNotFoundError:
+        # It doesn't matter if the file does not exist yet: it will be created next time the score is saved.
+        return {}
+
+def save_score(name:str, scores, score_file_corrupted:bool):
+    time_stamp = DisplayText.TIME_STAMP.format(dt.datetime.now())
+
+    if score_file_corrupted:
+        print(ErrorMessages.FILE_CORRUPTED.format(settings.get_score_file_path))
+        overwrite_corrupted_score_file = yes_or_no(Prompts.SAVE_SCORE + Prompts.OVERWRITE_CORRUPTED_SCORES)
+        if overwrite_corrupted_score_file:
+            save_score_to_file(name, scores, results.get_adjusted_score, time_stamp)
+    else:
+        save_score_to_file(name, scores, results.get_adjusted_score, time_stamp)
+
 #---------------#
 # PROGRAM START #
 #---------------#
@@ -212,109 +267,26 @@ settings, questions = load_essential_files()
 print(DisplayText.WELCOME)
 name = get_user_name()
 
-max_score = 0
-score = 0
-questions_correct = 0
-# Ensure number of questions doesn't exceed number of questions available.
+# Ensure number of questions doesn't exceed number of available questions.
 number_of_questions = min(len(questions), settings.get_number_of_questions)
-for q in range(number_of_questions):
 
-    # Print question.
+results = do_quiz(settings, questions)
 
-    print(DisplayText.QUESTION.format(q + 1, number_of_questions, questions[q].get_question))
-    
-    # [Multiple choice] Print answer options.
+print(DisplayText.RESULTS.format(results.get_questions_correct, number_of_questions, results.get_score, results.get_max_score, results.get_adjusted_score))
 
-    answer_options = questions[q].get_answer_options
-    shuffle(answer_options)
-    attempts = settings.get_number_of_attempts
-    if settings.get_multiple_choice:
-        # Ensure number of attempts does not exceed the number of incorrect answer options.
-        attempts = min(settings.get_number_of_attempts, len(questions[q].get_answer_options) - 1)
-        print_answer_options(
-            select_using_index = settings.get_select_using_index
-            ,answer_options    = questions[q].get_answer_options
-        )
-
-    # User enters answer.
-
-    points = attempts
-    max_score += points
-
-    points, correct = get_answer_results(
-        points              = points
-        ,multiple_choice    = settings.get_multiple_choice
-        ,select_using_index = settings.get_select_using_index
-        ,max_attempts       = attempts
-        ,answer             = questions[q].get_answer
-        ,answer_options     = answer_options
-    )
-
-    # Process answer results.
-
-    if correct:
-        print(DisplayText.CORRECT.format(points))
-        score += points
-        questions_correct += 1
-    
-    print(DisplayText.CURRENT_SCORE.format(score))
-
-#--------------#
-# Quiz Results #
-#--------------#
-
-adjusted_score = int(100 * (score / max_score))
-print(DisplayText.RESULTS.format(questions_correct, number_of_questions, score, max_score, adjusted_score))
-
-#------------#
-# Save Score #
-#------------#
-
-# Ask if user wants to save it.
+score_file_corrupted = False
+try:
+    scores = load_scores(settings)
+except ValueError:
+    score_file_corrupted = True
+    scores = {}
 
 save = yes_or_no(Prompts.SAVE_SCORE)
-
 if save:
-    time_stamp = DisplayText.TIME_STAMP.format(dt.datetime.now())
-    scores : dict[str, dict[str, int]] = {}
+    save_score(name, scores, score_file_corrupted)
 
-    # Load scores.
-
-    try:
-        scores = load_score_file(settings.get_score_file_path)
-    except FileNotFoundError:
-        print('DEBUG: Score file created.')
-    except ValueError:
-        scores = {}
-        print(ErrorMessages.FILE_CORRUPTED.format(settings.get_score_file_path))
-
-        # Ask if user wants to overwrite the corrupted file with their new score.
-        overwrite_corrupted = yes_or_no(Prompts.SAVE_SCORE + Prompts.OVERWRITE_CORRUPTED_SCORES)
-
-        if overwrite_corrupted:
-            scores[name] = {time_stamp : adjusted_score}
-            print(DisplayText.SCORE_SAVED)
-            save_score_file(settings.get_score_file_path, scores)
-    else:
-        
-        # Save scores.
-
-        if name in scores.keys():
-            scores[name][time_stamp] = adjusted_score
-        else:
-            scores[name] = {time_stamp : adjusted_score}
-        print(DisplayText.SCORE_SAVED)
-        save_score_file(settings.get_score_file_path, scores)
-
-    # View scores.
-
-    view_scores = yes_or_no(Prompts.VIEW_SCORES)
-
-    if view_scores:
-        print_scores(name, scores)
-
-#------#
-# Exit #
-#------#
+view_scores = yes_or_no(Prompts.VIEW_SCORES)
+if view_scores:
+    print_scores(name, scores)
 
 print(DisplayText.GOODBYE)
