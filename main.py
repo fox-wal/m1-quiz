@@ -182,33 +182,40 @@ def yes_or_no(prompt:str) -> bool:
         else:
             print(Prompts.YES_OR_NO)
 
-#------------#
-# Initialize #
-#------------#
+#
 
-# Load essential files
+def load_essential_files() -> tuple[Config, list[Question]]:
+    '''
+    Load essential files and dataclasses.
 
-CONFIG_FILE_PATH = "data/config.json"
+    Will abend if the files can't be loaded properly.
 
-settings:Config = load_config_file(CONFIG_FILE_PATH)
-questions:list[Question] = load_questions_file(settings.get_question_file_path)
-load_data_class(settings.get_display_text_file_path, DisplayText)
-load_data_class(settings.get_prompt_file_path, Prompts)
+    Returns:
+        A tuple containing the loaded settings and questions.
+    '''
 
-#---------#
-# Welcome #
-#---------#
+    CONFIG_FILE_PATH = "data/config.json"
+
+    settings:Config = load_config_file(CONFIG_FILE_PATH)
+    questions:list[Question] = load_questions_file(settings.get_question_file_path)
+    load_data_class(settings.get_display_text_file_path, DisplayText)
+    load_data_class(settings.get_prompt_file_path, Prompts)
+
+    return settings, questions
+
+#---------------#
+# PROGRAM START #
+#---------------#
+
+settings, questions = load_essential_files()
 
 print(DisplayText.WELCOME)
 name = get_user_name()
 
-#------------#
-# Start Quiz #
-#------------#
-
 max_score = 0
 score = 0
 questions_correct = 0
+# Ensure number of questions doesn't exceed number of questions available.
 number_of_questions = min(len(questions), settings.get_number_of_questions)
 for q in range(number_of_questions):
 
