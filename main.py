@@ -1,6 +1,7 @@
+from random import shuffle
 import file_handling as files
-from quiz import do_quiz
 from scores import save_and_view_scores
+from quiz import Quiz
 from display_text import DisplayText
 from prompts import Prompts
 
@@ -27,8 +28,10 @@ settings, questions = files.load_essential_files()
 print(DisplayText.WELCOME)
 name = get_user_name()
 
-final_score = do_quiz(settings, questions)
+shuffle(questions)
+quiz = Quiz(questions[:settings.get_number_of_questions], settings.get_multiple_choice, settings.get_select_using_index, settings.get_number_of_attempts)
+quiz.start()
 
-save_and_view_scores(name, settings.get_score_file_path, final_score)
+save_and_view_scores(name, settings.get_score_file_path, quiz.get_final_score)
 
 print(DisplayText.GOODBYE)
