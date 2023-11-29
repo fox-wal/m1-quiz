@@ -14,40 +14,6 @@ class KeyMissingError(Exception):
     def __init__(self, *args: object) -> None:
         super().__init__(*args)
 
-def format(json_object:dict, template:dict) -> dict:
-    '''
-    Check if an item from a json file is of the correct format.
-
-    Parameters:
-        json_object : dict[str, ?]
-            Object from a json file.
-        template : dict[str, ?]
-            Contains the expected keys and respective value types.
-
-    Raises:
-        KeyMissingError
-            If the `json_object` does not contain all the keys in the `template`.
-        ValueError
-            If one of the values in `json_object` is of the wrong type.
-    
-    Returns:
-        The `json_object` formatted according to the `template`.
-    '''
-    
-    result = {}
-    
-    # Check if all required keys are present.
-
-    if len(json_object) < len(template):
-        raise KeyMissingError
-    
-    # Check if all values are of the correct type.
-
-    for key, value in template.items():
-        result[key] = value(json_object[key])
-
-    return result
-
 def load_file(file_path:str) -> str:
     '''
     Load a file.
@@ -169,18 +135,24 @@ def load_score_file(file_path:str) -> dict[str, dict[str, int]]:
             The path to the score file.
 
     Raises:
-        FileNotFoundError
         ValueError
             If the scores file is formatted incorrectly.
+
+    Returns:
+        The correctly loaded score dictionary, or an empty dictionary if the score file was not found.
     '''
     
     file = open(file_path, 'r')
     try:
         contents = dict[str, dict[str, int]](json.load(file))
+    except FileNotFoundError:
+        # It doesn't matter if the file does not exist yet: it will be created next time the score is saved.
+        return {}
+
     finally:
         file.close()
 
-    TIME_STAMP_PATTERN = r"\d{2}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}"
+    TIME_STAMP_PATTERN = r"\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}"
     pattern = re.compile(TIME_STAMP_PATTERN)
 
     for score_dict in contents.values():
@@ -207,3 +179,25 @@ def save_score_file(file_path : str, scores:dict[str, dict[str, int]]):
         json.dump(scores, file)
     finally:
         file.close()
+
+def load_essential_files() -> tuple[Config, list[Question]]:
+    '''
+    Load essential files and dataclasses.
+
+    Will abend if the files can't be loaded properly.
+
+    Returns:
+        A tuple containing the loaded settings and questions.
+    '''
+
+    CONFIG_FILE_PATH = "data/config.json"
+
+    settings:Config = load_config_file(CONFIG_FILE_PATH)
+    questions:list[Question] = load_questions_file(settings.get_question_file_path)
+    load_data_class(settings.get_display_text_file_path, DisplayText)
+    load_data_class(settings.get_prompt_file_path, Prompts)
+
+    # Ensure number of questions doesn't exceed number of available questions.
+    settings.set_number_of_questions = min(len(questions), settings.get_number_of_questions)
+
+    return settings, questions

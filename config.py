@@ -74,3 +74,7 @@ prompt_file_path": {}'''.format(self.get_number_of_questions
     @property
     def get_prompt_file_path(self):
         return self.__prompt_file_path
+    
+    @get_number_of_questions.setter
+    def set_number_of_questions(self, value):
+        self.__number_of_questions = value
