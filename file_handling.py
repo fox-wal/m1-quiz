@@ -1,5 +1,5 @@
 import json
-import re
+import re as regex
 
 from error_handling import *
 from question import Question
@@ -153,7 +153,7 @@ def load_score_file(file_path:str) -> dict[str, dict[str, int]]:
         file.close()
 
     TIME_STAMP_PATTERN = r"\d{4}-\d{2}-\d{2}\s\d{2}:\d{2}:\d{2}"
-    pattern = re.compile(TIME_STAMP_PATTERN)
+    pattern = regex.compile(TIME_STAMP_PATTERN)
 
     for score_dict in contents.values():
         for time_stamp, score in score_dict.items():
