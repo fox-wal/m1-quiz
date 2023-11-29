@@ -22,7 +22,7 @@ class Config(object):
     '''
 
     def __init__(self, number_of_questions:int, number_of_attempts:int, multiple_choice:bool, select_using_index:bool, question_file_path:str, score_file_path:str, display_text_file_path:str, prompt_file_path:str):
-        # Ensure numbers of attempts and questions are at least 1.
+        # Ensure numbers of attempts and questions are positive.
         self.__number_of_questions = max(1, number_of_questions)
         self.__number_of_attempts = max(1, number_of_attempts)
         self.__multiple_choice = multiple_choice
@@ -33,22 +33,14 @@ class Config(object):
         self.__prompt_file_path = prompt_file_path
 
     def __str__(self) -> str:
-        return '''number_of_questions: {}
-number_of_attempts: {}
-multiple_choice: {}
-select_using_index: {}
-question_file_path: {}
-score_file_path: {}
-display_text_file_path: {}
-prompt_file_path": {}'''.format(self.get_number_of_questions
-        ,self.get_number_of_attempts
-        ,self.get_multiple_choice
-        ,self.get_select_using_index
-        ,self.get_question_file_path
-        ,self.get_score_file_path
-        ,self.get_display_text_file_path
-        ,self.get_prompt_file_path
-        )
+        return f'''number_of_questions: {self.__number_of_questions}
+number_of_attempts: {self.__number_of_attempts}
+multiple_choice: {self.__multiple_choice}
+select_using_index: {self.__select_using_index}
+question_file_path: {self.__question_file_path}
+score_file_path: {self.__score_file_path}
+display_text_file_path: {self.__display_text_file_path}
+prompt_file_path: {self.__prompt_file_path}'''
 
     @property
     def get_number_of_questions(self):
