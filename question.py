@@ -1,11 +1,27 @@
 class Question:
+    '''
+    A class to store details of a question.
+
+    Attributes:
+        __question : str
+            The question.
+        __answer_options : list[str]
+            All the multiple-choice answers to the question (correct *and* incorrect).
+        __answer : str
+            The correct answer to the question.
+    '''
+    
     def __init__(self, question:str, answer:str, answer_options:list[str]):
         self.__question = question
         self.__answer = answer
         self.__answer_options = answer_options
     
     def __str__(self):
-        return 'Question: {}\nAnswer: {}\nAnswer Options:\n * {}'.format(self.get_question, self.get_answer, '\n * '.join(self.get_answer_options))
+        answer_options = '\n* '.join(self.__answer_options)
+        return f'''Question: {self.__question}
+Answer: {self.__answer}
+Answer Options:
+* {answer_options}'''
 
     @property
     def get_question(self):

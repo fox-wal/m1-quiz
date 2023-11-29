@@ -22,13 +22,14 @@ class Prompts:
             
             1. The minimum allowed index.
             2. The maximum allowed index.
-        
         VALID_OPTION : str
             Prompt the user to enter a valid option.
 
             Arguments:
 
             1. The valid options.
+        YES_OR_NO : str
+            Prompt the user to enter "Y" or "N".
     '''
 
     NAME : str

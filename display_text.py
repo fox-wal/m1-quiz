@@ -2,8 +2,7 @@ class DisplayText:
     '''
     A class containing all non-prompt display text.
 
-    Attributes
-
+    Attributes:
         WELCOME : str
             Welcome the user to the quiz.
         SCORE_TABLE_HEADER : str

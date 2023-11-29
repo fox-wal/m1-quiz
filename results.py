@@ -15,7 +15,6 @@ class Results:
         increase_score(self, increase_by:int)
         increment_questions_correct(self)
         calculate_adjusted_score(self)
-            The score as a percentage of score / max_score.
     '''
 
     def __init__(self, max_score:int = 0, score:int = 0, questions_correct:int = 0) -> None:
@@ -49,4 +48,8 @@ questions_correct: {self.__questions_correct}'''
         self.__questions_correct += 1
 
     def calculate_adjusted_score(self) -> int:
+        '''
+        Returns:
+            The score as a percentage (score / max_score).
+        '''
         return int(100 * (self.__score / self.__max_score))
