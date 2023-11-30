@@ -16,7 +16,7 @@ def get_user_name() -> str:
         name = input(Prompts.NAME)
         if '"' in name:
             print(DisplayText.INVALID_CHARACTER.format('"'))
-        else:
+        elif len(name.strip()) > 0:
             return name
 
 #---------------#
