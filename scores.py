@@ -1,4 +1,5 @@
 import datetime
+import os
 from error_handling import ErrorMessages
 import file_handling as files
 from display_text import DisplayText
@@ -90,7 +91,7 @@ def save_score(score_file_path:str, scores:dict[str, dict[str, int]], score_file
     '''
 
     if score_file_corrupted:
-        print(ErrorMessages.FILE_CORRUPTED.format(score_file_path))
+        print(ErrorMessages.FILE_CORRUPTED.format(os.path.abspath(score_file_path)))
         overwrite_corrupted_score_file = yes_or_no(Prompts.SAVE_SCORE + Prompts.OVERWRITE_CORRUPTED_SCORES)
         if not overwrite_corrupted_score_file:
             return

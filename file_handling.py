@@ -1,4 +1,5 @@
 import json
+import os
 import re as regex
 
 from error_handling import *
@@ -31,7 +32,7 @@ def load_file(file_path:str) -> str:
     try:
         file = open(file_path, 'r')
     except FileNotFoundError:
-        abend(ErrorMessages.FILE_NOT_FOUND.format(file_path))
+        abend(ErrorMessages.FILE_NOT_FOUND.format(os.path.abspath(file_path)))
     else:
         return ''.join(file.readlines())
     finally:
@@ -60,9 +61,9 @@ def load_config_file(file_path:str) -> Config:
     try:
         settings = Config(*tuple(json.loads(file_contents).values()))
     except TypeError:
-        abend(ErrorMessages.FILE_INCOMPLETE.format(file_path))
+        abend(ErrorMessages.FILE_INCOMPLETE.format(os.path.abspath(file_path)))
     except ValueError:
-        abend(ErrorMessages.FILE_CORRUPTED.format(file_path))
+        abend(ErrorMessages.FILE_CORRUPTED.format(os.path.abspath(file_path)))
     else:
         return settings
 
@@ -95,10 +96,10 @@ def load_questions_file(file_path:str) -> list[Question]:
             questions.append(Question(*question.values()))
 
         if len(questions) == 0:
-            abend(ErrorMessages.FILE_INCOMPLETE.format(file_path))
+            abend(ErrorMessages.FILE_INCOMPLETE.format(os.path.abspath(file_path)))
 
     except KeyMissingError | ValueError:
-        abend(ErrorMessages.FILE_CORRUPTED.format(file_path))
+        abend(ErrorMessages.FILE_CORRUPTED.format(os.path.abspath(file_path)))
     else:
         return questions
 
@@ -119,12 +120,12 @@ def load_data_class(file_path:str, the_class):
     try:
         values = json.loads(file_contents)
     except ValueError:
-        abend(ErrorMessages.FILE_CORRUPTED.format(file_path))
+        abend(ErrorMessages.FILE_CORRUPTED.format(os.path.abspath(file_path)))
 
     try:
         the_class.set_values(the_class, *values.values())
     except IndexError:
-        abend(ErrorMessages.FILE_INCOMPLETE.format(file_path))
+        abend(ErrorMessages.FILE_INCOMPLETE.format(os.path.abspath(file_path)))
 
 def load_score_file(file_path:str) -> dict[str, dict[str, int]]:
     '''
